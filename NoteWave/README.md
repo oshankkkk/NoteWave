@@ -29,9 +29,10 @@ This MVP was developed as a part of a hackathon project using React and Firebase
 ## Contributing Guidelines
 
 1. Fork the repository
-2. Create a new branch (feature name)
-3. Commit your changes
-4. Always pull before push
-5. Open a pull request with a clear explanation of what you added or changed
+2. Download n install npm and firebase
+3. Create a new branch (feature name)
+4. Commit your changes
+5. Always pull before push
+6. Open a pull request with a clear explanation of what you added or changed
 
 Please make sure your code is clean, well-documented, and follows basic React/Firebase best practices.
