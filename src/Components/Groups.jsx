@@ -52,7 +52,7 @@ function GroupsCards() {
   return (
     <div className="ml-[25px] mr-[15px] pt-[10px]">
       <h1 className="text-2xl font-sans font-bold mb-[10px]">Popular Groups</h1>
-      <div className="grid grid-cols-3 gap-[20px]">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-[20px]">
         {publicGroups.map((group, index) => (
           <div
             key={index}
