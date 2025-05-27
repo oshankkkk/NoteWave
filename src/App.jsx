@@ -1,9 +1,9 @@
-import LoginPage from "./Login"
-
+import LoginPage from "./LoginPage"
+import SignUpPage from "./SignUpPage"
 function App(){
+
 return(
-  <LoginPage></LoginPage>
-  
+<SignUpPage></SignUpPage>
 )
 }
 export default App
