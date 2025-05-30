@@ -1,3 +1,12 @@
+// <<<<<<< oshan
+// import LoginPage from "./LoginPage"
+// import SignUpPage from "./SignUpPage"
+// function App(){
+
+// return(
+// <SignUpPage></SignUpPage>
+// )
+// =======
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -43,6 +52,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
       </Routes>
     </BrowserRouter>
   );
+// >>>>>>> main
 }
 export default App;
 
