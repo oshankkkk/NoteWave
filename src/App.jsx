@@ -4,10 +4,10 @@ import Groups from "./Components/Groups";
 
 function App() {
   return (
-    <div>
-      <Sidebar />
-      <Groups />
-    </div>
+    // <div>
+    //   <Sidebar />
+    //   <Groups />
+    // </div>
   );
 }
 export default App;
