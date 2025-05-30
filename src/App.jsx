@@ -1,4 +1,17 @@
-// <<<<<<< oshan
+
+// import React from 'react';
+// import Calendar from './Calendar'; // Make sure the path is correct
+
+// function App() {
+//     return (
+//         <div>
+//             <Calendar />
+//         </div>
+//     );
+// }
+
+// export default App;
+
 // import LoginPage from "./LoginPage"
 // import SignUpPage from "./SignUpPage"
 // function App(){
@@ -6,7 +19,6 @@
 // return(
 // <SignUpPage></SignUpPage>
 // )
-// =======
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -52,7 +64,6 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
       </Routes>
     </BrowserRouter>
   );
-// >>>>>>> main
 }
 export default App;
 
