@@ -1,7 +1,4 @@
-
-
 import { auth, googleProvider } from './firebase-config';
-
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -36,4 +33,4 @@ import {
     } catch (err) {
       console.log("Logout error:", err.message);
     }
-    }
+  }
