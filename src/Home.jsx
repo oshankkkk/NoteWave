@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Home.css";
 
 import SearchGroups from './SearchGroups';
-import {auth} from '/firebase-config.js';
+import {auth} from './firebase-config';
 
 
 
@@ -30,69 +30,15 @@ const user = auth.currentUser;
        
         <div className="container">
           
-            <header className="app-header">
-                <div className="header-left">
-                    <img id="logo" src="images\logo.png"></img>
-                    <span className="app-name">NoteWave</span>
-                    <button className="btn" id="collapse-btn" onClick={toggleSidebar}><i class="fa-solid fa-chevron-left"></i></button>
-                </div>
-
-                <div className="header-center">
-                    <div className="search-wrapper">
-                    <i className="fas fa-search search-icon"></i>
-                    <input type="text"  placeholder="Search for study guides, groups and more...." className="search-input" value={query}
-        onChange={(e) => setQuery(e.target.value)}/>
-        {
-            query.length>0 && (
-                <button className="close" onClick={() => setQuery('')}><i class="fa-solid fa-xmark"></i></button>
-            )
-        }
-                    
-
-                    
-                    </div>
-                {
-                query.length > 0 && (
-                <div className="search-feedback" > {<SearchGroups query={query}/>}</div>
-)
-                }
-                
-                </div>
-
-                <div className="header-right" onClick={handleProfile}>
-                    <img src={user.photoURL || 'https://via.placeholder.com/150'} className="img-h"></img>
-                </div>
-            </header>
+           
             <div className="main-container" >
                
-            <aside className={`side-bar ${isVisible ? 'collapsed' : ''}`}>
-
-                <ul>
-                    <li className="active"><i class="fa-solid fa-house"></i><span className="side-text">Home</span></li>
-                    <li><i class="fa-solid fa-user-group"></i><span className="side-text">Groups</span></li>
-                    <li><i class="fa-solid fa-calendar-days"></i><span className="side-text">Calender</span></li>
-                    
-                  
-                </ul>
-                <ul id="settings">
-                    <li><i class="fa-solid fa-gear"></i><span className="side-text">Settings</span></li>
-                </ul>
-
-
-            </aside>
+           
             <div className="main">
                 
                 <img id="greetingImg" src={selectedImage}></img>
             </div>
-            {showProfile && user&&(
-            <div className="profile">
-                <p id="img-container"><img src={user.photoURL || 'https://via.placeholder.com/150'} className="img"></img></p>
-               
-                <h1 id="name">{user.displayName}</h1>
-                <p id="email">{user.email}</p>
-
-            </div>)
-            }
+            
         </div>
         </div>
     );

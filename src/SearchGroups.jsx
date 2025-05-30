@@ -4,7 +4,7 @@ import { collection, getDocs } from "firebase/firestore";
 import Fuse from 'fuse.js';
 import './SearchGroups.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { auth} from "../firebase-config.js";
+import { auth} from './firebase-config';
 
 export default function SearchGroups({ query }) {
   const [groups, setGroups] = useState([]);

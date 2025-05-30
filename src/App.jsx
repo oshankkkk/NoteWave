@@ -5,28 +5,36 @@ import "./App.css";
 import LoginPage from './Login.jsx';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase-config.js'; 
+import { auth } from './firebase-config'; 
+import './index.css';
+import NavBar from './Layout.jsx';
 function App(){
 const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true); // Optional: to wait for auth to initialize
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsLoggedIn(!!user);  // true if user exists, false otherwise
+      setIsLoggedIn(!!user);  
       setLoading(false);
     });
 
-    // Cleanup subscription on unmount
+    
     return () => unsubscribe();
   }, []);
 
   return (
     <BrowserRouter>
       <Routes>
+        {/* Protected routes under AppLayout */}
         <Route
           path="/"
-          element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
-        />
+          element={isLoggedIn ? <NavBar /> : <Navigate to="/login" replace />}
+        >
+          <Route index element={<Home />} />
+          
+        </Route>
+
+        {/* Public route */}
         <Route
           path="/login"
           element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />}

@@ -13,7 +13,7 @@
   box-sizing: border-box;
 }
 body{
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: var(--bg-color);
     
 }
@@ -104,7 +104,7 @@ body{
 }
 
 .side-bar {
-  width: 15%;
+  
   height:100vh;
   border-radius:0 0 15px 15px;
   background-color: var(--side-color);
@@ -115,9 +115,27 @@ body{
   transition: width 0.3s ease;
   overflow: hidden;
 }
-.side-bar.collapsed {
-  width:6%; 
+.side-text{
+  font-size: 15px;
 }
+.side-bar.collapsed {
+  width:6%;
+  
+}
+.side-bar.collapsed ul{
+  position: relative;
+  margin-top: 60px;
+  
+}
+.side-bar.collapsed li{
+  margin-bottom: 27%;
+}
+#settings{
+  position: relative;
+  top: 29%;
+ 
+}
+
 .side-bar .side-text {
   display: inline-block;
   transition: opacity 0.3s ease;
@@ -127,10 +145,12 @@ body{
   display: none; 
 }
 
+
 .side-bar ul{
     margin-top: 50%;
     list-style-type: none;
     padding:0;
+    
 }
 .side-bar li{
     margin-bottom: 3%;
@@ -139,6 +159,7 @@ body{
     cursor: pointer;
     color:var(--text-color);
 }
+
 .side-bar i{
     margin-left: 4%;
     margin-right: 8%;
@@ -226,6 +247,7 @@ body{
   right:1px;
   width:40%;
   height:50%;
+  top:10%;
   border-radius: 15px;
   background-color:var(--bg-color);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 
@@ -238,6 +260,9 @@ body{
   align-items: center;  
   justify-content: center; 
   text-align: center;
+  font:bolder;
+  color:var(--text-color);
+  cursor: pointer;
 }
 
 .search-feedback{
@@ -260,10 +285,18 @@ body{
 }
 .img{
   border-radius: 50%;
+  box-shadow: 0 0 20px 5px rgba(128, 0, 255, 0.7);
+  margin-bottom: 35%;
+  top:1;
 
 }
 .img-h{
   border-radius: 50%;
   height:24px;
 
+}
+.icons{
+  padding-right: 10px;
+  color: var(--btn-color);
+  left: 0;
 }
