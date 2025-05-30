@@ -50,13 +50,14 @@ function GroupsCards() {
   }, []);
 
   return (
-    <div className="ml-[25px] mr-[15px] pt-[10px]">
+    <div className="ml-[25px] mr-[15px] pt-[10px] w-full">
       <h1 className="text-2xl font-sans font-bold mb-[10px]">Popular Groups</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-[20px]">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-[20px] md:grid-cols-[repeat(3,294px)] gap-y-5  md:gap-x-[20px] justify-center px-4">
         {publicGroups.map((group, index) => (
           <div
             key={index}
-            className="bg-fuchsia-200 w-[294px] h-[230px] rounded-[10px] p-4 flex flex-col items-center justify-between"
+            className="bg-fuchsia-200 rounded-[10px] p-4 flex flex-col items-center justify-between w-full sm:w-full md:w-[294px] shadow-md hover:shadow-lg transition-shadow duration-300"
           >
             <img
               src={group.image}
