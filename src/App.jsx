@@ -1,9 +1,13 @@
-function App(){
-return(
-<div className="flex justify-center min-h-screen items-center">
-  <h1>NoteWave</h1>
-</div>
-  
-)
+import React from "react";
+import { Sidebar } from "./assets/SideBar/Sidebar";
+import Groups from "./Components/Groups";
+
+function App() {
+  return (
+    <div>
+      <Sidebar />
+      <Groups />
+    </div>
+  );
 }
-export default App
+export default App;
