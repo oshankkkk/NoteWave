@@ -14,7 +14,7 @@ const user = auth.currentUser;
  
     const [selectedImage, setSelectedImage] = useState(() => {
     const randIdx = Math.floor(Math.random() * nImages) + 1;
-    return `/images/${randIdx}.png`; 
+    return `/Images/${randIdx}.png`; 
   });
     const [isVisible,setVisible]=useState(false);
     const toggleSidebar=()=>{

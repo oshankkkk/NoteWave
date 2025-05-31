@@ -13,6 +13,8 @@ function NavBar() {
 
   const [query, setQuery] = useState('');
   const user = auth.currentUser;
+  const bustedUrl = user.photoURL + '?cb=' + new Date().getTime();
+
 
   return (
     <div className="app-container">
@@ -21,7 +23,8 @@ function NavBar() {
           <img id="logo" src="images/logo.png" alt="Logo" />
           <span className="app-name">NoteWave</span>
           <button className="btn" id="collapse-btn" onClick={toggleSidebar}>
-            <i className="fa-solid fa-chevron-left"></i>
+            {isVisible&&(<i className="fa-solid fa-chevron-left"></i>)}
+            {!isVisible&&(<i class="fa-solid fa-chevron-right"></i>)}
           </button>
         </div>
 
@@ -50,11 +53,7 @@ function NavBar() {
         </div>
 
         <div className="header-right" onClick={handleProfile}>
-          <img
-            src={user?.photoURL || 'https://via.placeholder.com/150'}
-            alt="User"
-            className="img-h"
-          />
+          <img src={user?.photoURL || '/Images/spare-avatar.png'} alt="User" className="img-h"/>
         </div>
       </header>
 
@@ -98,7 +97,7 @@ function NavBar() {
       {showProfile && user && (
         <div className="profile">
           <p id="img-container">
-            <img src={user.photoURL} alt="User profile" className="img" />
+            <img src={user?.photoURL|| '/Images/spare-avatar.png'} alt="User profile" className="img" />
           </p>
           <h1 id="name">
             <i className="fa-solid fa-user icons"></i>&nbsp;{user.displayName}
