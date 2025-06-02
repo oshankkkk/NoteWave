@@ -1,20 +1,22 @@
 import { useState } from "react";
 import { handleGoogleSignup } from "./AuthFunctions";
-export default function AuthForm({formFunction,formAction}) {
+import { Link } from 'react-router-dom';
+
+export default function AuthForm({ formFunction, formAction }) {
   const [email, setEmail] = useState("");
-  const[password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
  
-  let altForm="Sign Up"
-  let altFormLink=""
-  let altFormTitle="Dont have a account?"
-  if(formAction==="Sign Up"){
-      altForm="Login"
-      altFormLink=""
-      altFormTitle="Already have a account?"
+  let altForm = "Sign Up";
+  let altFormLink = "";
+  let altFormTitle = "Dont have a account?";
+  if (formAction === "Sign Up") {
+    altForm = "Login";
+    altFormLink = "";
+    altFormTitle = <Link to="/login">"Already have a account?"</Link>;
   }
 
-function handleSubmit(e){
-  e.preventDefault()
+  function handleSubmit(e) {
+    e.preventDefault();
   }
 
   return (
@@ -28,35 +30,6 @@ function handleSubmit(e){
           <h4 className="text-lg text-center mb-4">
             Please login or sign up to continue
           </h4>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full mb-3 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full mb-4 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-purple-600 text-white font-medium rounded-lg">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              {formAction}
-            </button>
-          </form>
-
           <button
             onClick={handleGoogleSignup}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium "

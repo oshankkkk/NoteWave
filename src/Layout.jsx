@@ -3,7 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import SearchGroups from './SearchGroups';
 import { auth } from './firebase-config';
 import { getAuth, signOut } from "firebase/auth";
-import "./Home.css"; // Make sure it has the layout CSS
+import "./styles/Home.css"; // Make sure it has the layout CSS
 import { onAuthStateChanged } from "firebase/auth";
 
 function NavBar() {
@@ -70,7 +70,7 @@ useEffect(() => {
             </div>
           )}
         </div>
-
+ {/* <div className="min-h-screen fixed inset-y-0 py-5  right-3 w-[30%] flex flex-col items-center justify-center bg-purple-600 ">  */}
         <div className="header-right" onClick={handleProfile}>
          
           <img src={user?.photoURL && user?.photoURL !== "" ? user.photoURL : '/Images/spare-avatar.png'} alt="User" className="img-h"/>

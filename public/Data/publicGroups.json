@@ -1,0 +1,56 @@
+[
+  {
+    "image": "/Images/publicGroups-dp/ByteBusters.jpeg",
+    "name": "ByteBusters",
+    "description": "The official group of ByteBustes.",
+    "members": 5
+  },
+  {
+    "image": "/Images/publicGroups-dp/IIT-september.png",
+    "name": "IIT Spectember",
+    "description": "A group for all september batch IITians to connect and collaborate.",
+    "members": 550
+  },
+  {
+    "image": "/Images/publicGroups-dp/Maths-Club.jpg",
+    "name": "Maths Club",
+    "description": "A club for maths enthusiasts to discuss and solve problems.",
+    "members": 380
+  },
+  {
+    "image": "/Images/publicGroups-dp/Techies-United.png",
+    "name": "Techies United",
+    "description": "A community for tech enthusiasts to share knowledge and resources.",
+    "members": 1200
+  },
+  {
+    "image": "/Images/publicGroups-dp/Bookworms.jpg",
+    "name": "Bookworms",
+    "description": "A group for book lovers to discuss their favorite reads.",
+    "members": 300
+  },
+  {
+    "image": "/Images/publicGroups-dp/Artistic-Expressions.jpg",
+    "name": "Artistic Expressions",
+    "description": "A platform for artists to showcase their work and collaborate.",
+    "members": 450
+  },
+  {
+    "image": "/Images/publicGroups-dp/Science-Explorers.jpg",
+    "name": "Science Explorers",
+    "description": "A group for science enthusiasts to explore and discuss various topics.",
+    "members": 600
+  },
+  {
+    "image": "/Images/publicGroups-dp/Coding-Crafters.jpg",
+    "name": "Coding Crafters",
+    "description": "A community for coders to share projects and learn from each other.",
+    "members": 800
+  },
+  {
+    "image": "/Images/publicGroups-dp/History-Buffs.jpg",
+    "name": "History Buffs",
+    "description": "A group for history enthusiasts to discuss and share knowledge.",
+    "members": 200
+  }
+]

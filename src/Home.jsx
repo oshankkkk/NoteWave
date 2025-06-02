@@ -1,14 +1,14 @@
 import React, { useState,useEffect } from "react";
-import "./Home.css";
+
 
 import SearchGroups from './SearchGroups';
 import {auth} from './firebase-config';
 
 import { getAuth, signOut } from "firebase/auth";
-import "./Home.css"; // Make sure it has the layout CSS
+import "./styles//Home.css"; // Make sure it has the layout CSS
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
-import {db} from "./firebase.js";
+import {db } from './firebase-config';
 
 
 function Home(){

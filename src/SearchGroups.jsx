@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { db } from "./firebase";
+import { db } from "./firebase-config";
 import { collection, getDocs } from "firebase/firestore";
 import Fuse from 'fuse.js';
-import './SearchGroups.css';
+// import '.styles/SearchGroups.css';
+import "./styles/SearchGroups.css";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { auth} from './firebase-config';
 

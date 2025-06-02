@@ -1,5 +1,5 @@
-import { auth, googleProvider } from './firebase-config';
-import {db} from './firebase';
+import { auth, googleProvider,db } from '../firebase-config';
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
