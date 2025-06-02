@@ -3,7 +3,7 @@ import SignUpPage from "./SignUpPage"
 function App(){
 
 return(
-<SignUpPage></SignUpPage>
+<LoginPage/>
 )
 }
 export default App
