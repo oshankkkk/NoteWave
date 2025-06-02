@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink, Outlet } from 'react-router-dom';
 import SearchGroups from './SearchGroups';
 import { auth } from './firebase-config';
-import "./Home.css"; // Make sure it has the layout CSS
+import "./styles/Home.css"; // Make sure it has the layout CSS
 
 function NavBar() {
   const [isVisible, setVisible] = useState(true);

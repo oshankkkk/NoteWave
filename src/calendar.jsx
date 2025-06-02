@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
 import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/react';
 import { createViewMonthGrid, createViewWeek } from '@schedule-x/calendar';
 import { createEventModalPlugin } from '@schedule-x/event-modal';
 import { createDragAndDropPlugin } from '@schedule-x/drag-and-drop';
 import '@schedule-x/theme-default/dist/calendar.css';
-import './calendar.css';
+import './styles/calendar.css';
 function App() {
     const [events, setEvents] = useState([
         {

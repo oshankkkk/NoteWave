@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Home.css";
+import "./styles/Home.css";
 
 import SearchGroups from './SearchGroups';
 import {auth} from './firebase-config';
