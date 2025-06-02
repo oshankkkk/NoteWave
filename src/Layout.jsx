@@ -48,10 +48,10 @@ function NavBar() {
             </div>
           )}
         </div>
-
+ {/* <div className="min-h-screen fixed inset-y-0 py-5  right-3 w-[30%] flex flex-col items-center justify-center bg-purple-600 ">  */}
         <div className="header-right" onClick={handleProfile}>
           <img
-            src={user?.photoURL || 'https://via.placeholder.com/150'}
+            src={user.photoURL  }
             alt="User"
             className="img-h"
           />
