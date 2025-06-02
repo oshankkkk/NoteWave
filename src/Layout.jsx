@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, Outlet } from 'react-router-dom';
 import SearchGroups from './SearchGroups';
 import { auth } from './firebase-config';
+import { getAuth, signOut } from "firebase/auth";
 import "./Home.css"; // Make sure it has the layout CSS
+import { onAuthStateChanged } from "firebase/auth";
 
 function NavBar() {
   const [isVisible, setVisible] = useState(true);
@@ -12,15 +14,31 @@ function NavBar() {
   const handleProfile = () => setProfile(prev => !prev);
 
   const [query, setQuery] = useState('');
-  const user = auth.currentUser;
-  const bustedUrl = user.photoURL + '?cb=' + new Date().getTime();
+  const [user, setUser] = useState(null);
 
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
 
+  return () => unsubscribe(); 
+}, []);
+  
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login"); // or whatever your login route is
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
+  
   return (
     <div className="app-container">
       <header className="app-header">
         <div className="header-left">
-          <img id="logo" src="images/logo.png" alt="Logo" />
+         {/*} <img id="logo" src="Images/logo.png" alt="Logo" /> */}
           <span className="app-name">NoteWave</span>
           <button className="btn" id="collapse-btn" onClick={toggleSidebar}>
             {isVisible&&(<i className="fa-solid fa-chevron-left"></i>)}
@@ -31,6 +49,7 @@ function NavBar() {
         <div className="header-center">
           <div className="search-wrapper">
             <i className="fas fa-search search-icon"></i>
+
             <input
               type="text"
               placeholder="Search for study guides, groups and more..."
@@ -53,7 +72,8 @@ function NavBar() {
         </div>
 
         <div className="header-right" onClick={handleProfile}>
-          <img src={user?.photoURL || '/Images/spare-avatar.png'} alt="User" className="img-h"/>
+         
+          <img src={user?.photoURL && user?.photoURL !== "" ? user.photoURL : '/Images/spare-avatar.png'} alt="User" className="img-h"/>
         </div>
       </header>
 
@@ -96,8 +116,9 @@ function NavBar() {
 
       {showProfile && user && (
         <div className="profile">
+          <button id="close" onClick={handleProfile}><i class="fa-solid fa-xmark"></i></button>
           <p id="img-container">
-            <img src={user?.photoURL|| '/Images/spare-avatar.png'} alt="User profile" className="img" />
+            <img src={user?.photoURL && user?.photoURL !== "" ? user.photoURL : '/Images/spare-avatar.png'} alt="User profile" className="img" />
           </p>
           <h1 id="name">
             <i className="fa-solid fa-user icons"></i>&nbsp;{user.displayName}
@@ -105,6 +126,7 @@ function NavBar() {
           <p id="email">
             <i className="fa-solid fa-envelope icons"></i>&nbsp;{user.email}
           </p>
+          <button id="logout" onClick={handleLogout}><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
         </div>
       )}
     </div>

@@ -20,8 +20,8 @@ body {
 
 /* Logo */
 #logo {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   padding-right: 1%;
 }
@@ -252,7 +252,7 @@ body {
   top: 10%;
   width: 40%;
   max-width: 400px;
-  height: 50%;
+  height: 70vh;
   border-radius: 15px;
   background-color: var(--bg-color);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12),
@@ -260,12 +260,12 @@ body {
   transition: all 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  padding: 3%;
   font-weight: bold;
   color: var(--text-color);
+  font-weight: lighter;
   cursor: pointer;
+  font-size: medium;
 }
 
 /* Feedback Dropdown */
@@ -285,12 +285,14 @@ body {
 .img {
   border-radius: 50%;
   box-shadow: 0 0 20px 5px rgba(128, 0, 255, 0.7);
-  margin-bottom: 35%;
+  margin-bottom: 15%;
   top: 1px;
   width:auto;
   height: auto;
   max-width: 45px;
   max-height: 45px;
+  position: relative;
+  margin-left: 50%;
 }
 
 .img-h {
@@ -302,4 +304,82 @@ body {
   padding-right: 10px;
   color: var(--btn-color);
   left: 0;
+}
+
+#logout{
+  color:var(--btn-color);
+  font-weight: lighter;
+  margin-top: 70px;
+  font-size: 16px;
+}
+#close{
+  position: relative;
+  margin-left: 90%;
+  top: 1px;
+  size: 3vh;
+  cursor: pointer;
+  color: var(--btn-color);
+}
+#spinner {
+  animation: spin 1.6s linear infinite;
+  
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+#loading-s{
+  position: relative;
+  left:30%;
+  color: var(--btn-color);
+  font-weight: bold;
+}
+#grp-container{
+  width: 100%;
+ 
+}
+#grp-container span{
+   
+ margin-left: 10px;
+ margin-top: 6px;
+ font-weight: bold;
+ font-size:16px;
+}
+.grp-icon{
+  width:45px;
+  border-radius: 50%;
+  border: 1px solid var(--btn-color);
+   margin-bottom:6px;
+}
+.img-msg{
+  display: flex;
+  flex-direction: row;
+ 
+   border-bottom: 1px solid var(--text-color);
+   padding-bottom: 10px;
+   margin-top: 10px;
+   cursor: pointer;
+}
+.par{
+  display: flex;
+  flex-direction: row;
+}
+.par p{
+ float: right;
+ position: relative;
+ margin-top: 20%;
+ font-family: 'Dancing Script', cursive;
+ 
+
+}
+#main-title{
+  padding:1%;
+  padding-left: 0%;
+  font-size: 4vh;
+  font-weight: bolder;
+  color:var(--btn-color)
+}
+.app-name{
+  margin-top: 1.5%;
+  position: relative;
 }

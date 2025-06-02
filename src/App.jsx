@@ -8,6 +8,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase-config'; 
 import './index.css';
 import NavBar from './Layout.jsx';
+import SignUpPage from './SignUpPage.jsx';
 function App(){
 const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true); 
@@ -37,7 +38,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
         {/* Public route */}
         <Route
           path="/login"
-          element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />}
+          element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />}
         />
       </Routes>
     </BrowserRouter>

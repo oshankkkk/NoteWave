@@ -99,3 +99,20 @@ const user = auth.currentUser;
     );
 }
 export default Home;
+=======================================================================
+ const nImages = 5;
+
+ 
+    const [selectedImage, setSelectedImage] = useState(() => {
+    const randIdx = Math.floor(Math.random() * nImages) + 1;
+    return `/Images/${randIdx}.png`; 
+  });
+    const [isVisible,setVisible]=useState(false);
+    const toggleSidebar=()=>{
+        setVisible(prev=>!prev);
+    };
+    const [showProfile,setProfile]=useState(false);
+    const handleProfile=()=>{
+        setProfile(prv=>!prv);
+    };
+    const [query, setQuery] = useState('');
