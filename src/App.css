@@ -25,7 +25,7 @@
 /* Sidebar fixed width */
 .side-bar {
   width: 12%;
-  position: absolute;
+  /* position: absolute; */
   overflow-y: auto;
 }
 
@@ -33,5 +33,5 @@
 .main-content {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 1%;
+  /* padding: 1%; */
 }

@@ -30,6 +30,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase-config'; 
 import './index.css';
 import NavBar from './Layout.jsx';
+import Groups from './Groups.jsx';
 function App(){
 const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true); 
@@ -53,6 +54,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
           element={isLoggedIn ? <NavBar /> : <Navigate to="/login" replace />}
         >
           <Route index element={<Home />} />
+          <Route path="groups" element={<Groups />} />
           
         </Route>
 

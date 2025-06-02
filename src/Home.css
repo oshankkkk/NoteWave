@@ -7,11 +7,11 @@
     --text-color:#696767;
 
 }
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
+} */
 body{
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-color);
@@ -96,11 +96,11 @@ body{
 }
 
 .container {
-  display: block;
+  display: flex; 
   flex-direction: row;
   height: 100vh;
   width: 100%;
-  padding:1%;
+  /* padding:1%; */
 }
 
 .side-bar {

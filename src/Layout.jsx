@@ -18,7 +18,7 @@ function NavBar() {
     <div className="app-container">
       <header className="app-header">
         <div className="header-left">
-          <img id="logo" src="images/logo.png" alt="Logo" />
+          <img id="logo" src="Images/logo.png" alt="Logo" />
           <span className="app-name">NoteWave</span>
           <button className="btn" id="collapse-btn" onClick={toggleSidebar}>
             <i className="fa-solid fa-chevron-left"></i>
@@ -41,7 +41,6 @@ function NavBar() {
               </button>
             )}
           </div>
-
           {query.length > 0 && (
             <div className="search-feedback">
               <SearchGroups query={query} />

@@ -3,6 +3,7 @@ import "./Home.css";
 
 import SearchGroups from './SearchGroups';
 import {auth} from './firebase-config';
+import GroupSideBar from "./JoinedGroups";
 
 
 
@@ -14,7 +15,7 @@ const user = auth.currentUser;
  
     const [selectedImage, setSelectedImage] = useState(() => {
     const randIdx = Math.floor(Math.random() * nImages) + 1;
-    return `/images/${randIdx}.png`; 
+    return `/Images/${randIdx}.png`; 
   });
     const [isVisible,setVisible]=useState(false);
     const toggleSidebar=()=>{
@@ -29,17 +30,18 @@ const user = auth.currentUser;
     return(
        
         <div className="container">
+            <GroupSideBar/>
           
            
             <div className="main-container" >
                
            
-            <div className="main">
+                <div className="main">
+                    
+                    <img id="greetingImg" src={selectedImage}></img>
+                </div>
                 
-                <img id="greetingImg" src={selectedImage}></img>
             </div>
-            
-        </div>
         </div>
     );
 }
