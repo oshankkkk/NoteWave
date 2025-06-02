@@ -4,7 +4,7 @@ import { createEventModalPlugin } from '@schedule-x/event-modal';
 import { createDragAndDropPlugin } from '@schedule-x/drag-and-drop';
 import '@schedule-x/theme-default/dist/calendar.css';
 import './styles/calendar.css';
-function App() {
+function Calender() {
     const [events, setEvents] = useState([
         {
             id: 1,
@@ -71,4 +71,4 @@ function App() {
     );
 }
 
-export default App;
+export default Calender;

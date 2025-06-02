@@ -1,5 +1,6 @@
 import AuthForm from "./AuthForm";
 import { handleEmailSignup } from "./AuthFunctions";
+
 export default function SignUpPage(){
 
 let formAction="Sign Up"

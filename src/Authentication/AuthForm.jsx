@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { handleGoogleSignup } from "./AuthFunctions";
+import { Link } from 'react-router-dom';
+
 export default function AuthForm({ formFunction, formAction }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+ 
   let altForm = "Sign Up";
   let altFormLink = "";
   let altFormTitle = "Dont have a account?";
   if (formAction === "Sign Up") {
     altForm = "Login";
     altFormLink = "";
-    altFormTitle = "Already have a account?";
+    altFormTitle = <Link to="/login">"Already have a account?"</Link>;
   }
 
   function handleSubmit(e) {
