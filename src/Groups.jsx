@@ -49,7 +49,7 @@ function GroupsCards() {
 
 function Groups() {
   return (
-    <div className="flex bg-fuchsia-50 ml-[69px] mt-[46px]">
+    <div className="flex bg-fuchsia-100">
       <GroupsCards />
     </div>
   );

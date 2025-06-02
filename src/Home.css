@@ -5,13 +5,8 @@
     --hover-color:#97f9ef;
     --hover-text:#222222;
     --text-color:#696767;
-
 }
-/* * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-} */
+
 body{
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-color);
