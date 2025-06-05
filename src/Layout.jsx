@@ -15,10 +15,18 @@ function NavBar() {
 
   const [query, setQuery] = useState('');
   const [user, setUser] = useState(null);
+const [imgSrc, setImgSrc] = React.useState('/Images/spare-avatar.png');
 
+React.useEffect(() => {
+  if (user?.photoURL) {
+    setImgSrc(user.photoURL);
+  }
+}, [user]);
 useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    
     setUser(currentUser);
+   
   });
 
   return () => unsubscribe(); 
@@ -73,7 +81,7 @@ useEffect(() => {
  {/* <div className="min-h-screen fixed inset-y-0 py-5  right-3 w-[30%] flex flex-col items-center justify-center bg-purple-600 ">  */}
         <div className="header-right" onClick={handleProfile}>
          
-          <img src={user?.photoURL && user?.photoURL !== "" ? user.photoURL : '/Images/spare-avatar.png'} alt="User" className="img-h"/>
+          <img src={imgSrc} alt="User" onError={() => setImgSrc('/Images/spare-avatar.png')} className="img-h" />
         </div>
       </header>
 
@@ -118,7 +126,7 @@ useEffect(() => {
         <div className="profile">
           <button id="close" onClick={handleProfile}><i class="fa-solid fa-xmark"></i></button>
           <p id="img-container">
-            <img src={user?.photoURL && user?.photoURL !== "" ? user.photoURL : '/Images/spare-avatar.png'} alt="User profile" className="img" />
+            <img src={imgSrc} alt="User" onError={() => setImgSrc('/Images/spare-avatar.png')} className="img" />
           </p>
           <h1 id="name">
             <i className="fa-solid fa-user icons"></i>&nbsp;{user.displayName}
