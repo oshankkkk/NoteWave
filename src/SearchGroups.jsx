@@ -55,7 +55,7 @@ export default function SearchGroups({ query }) {
       
        
      
-      {results.length === 0 && <p>No public groups found for your query.</p>}
+      {results.length === 0 && <p>No public groups were found bro.</p>}
       {results.filter(group => group.isPublic).map( group=> (
        
         <div
@@ -66,7 +66,7 @@ export default function SearchGroups({ query }) {
           
         >
           
-          <h3>{group.name} created by {group.admin}  &nbsp;&nbsp;<i  class="fa-solid fa-arrow-up-right-from-square" id="link"></i>  </h3>
+          <h3>`{group.name}` <i  class="fa-solid fa-arrow-up-right-from-square" id="link"></i>  </h3>
         </div>
       ))}
     </div>

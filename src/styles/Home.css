@@ -369,7 +369,7 @@ body {
  position: relative;
  margin-top: 20%;
  font-family: 'Dancing Script', cursive;
- 
+ color: var(--btn-color);
 
 }
 #main-title{
@@ -382,4 +382,42 @@ body {
 .app-name{
   margin-top: 1.5%;
   position: relative;
+}
+.unread-cnt{
+   right: 5%;
+   position: absolute;
+   
+  
+ 
+   background-color: var(--btn-color);
+   color: white;
+  font-weight: bold;
+  font-size: 12px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 12px; /* fully rounded */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#admin-edit{
+  border-radius: 50%;
+  margin-left: 50px;
+  background-color: var(--btn-color);
+  display: flex;
+  padding: 1%;
+  height:34px;
+  width: 34px;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  display: none;
+  cursor: pointer;
+}
+.img-msg:hover #admin-edit {
+  display: flex;
+}
+.alert{
+  width: 40vw;
 }
