@@ -19,17 +19,17 @@
 // <SignUpPage></SignUpPage>
 // )
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Home from "./Home";
-import "./styles/App.css";
+// import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+// import Home from "./Home";
+// import "./styles/App.css";
 
 
-import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase-config'; 
-import './index.css';
-import NavBar from './Layout.jsx';
-import SignUpPage from './Authentication/SignUpPage.jsx';
+// import { useEffect, useState } from 'react';
+// import { onAuthStateChanged } from 'firebase/auth';
+// import { auth } from './firebase-config'; 
+// import './index.css';
+// import NavBar from './Layout.jsx';
+// import SignUpPage from './Authentication/SignUpPage.jsx';
 import LoginPage from './Authentication/LoginPage.jsx';
 
 function App(){

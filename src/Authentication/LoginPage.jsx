@@ -8,8 +8,8 @@ return(
 
     <div className="min-h-screen flex bg-purple-600">
 
-
-// <Logo></Logo>
+{/* 
+// <Logo></Logo> */}
 
 
 

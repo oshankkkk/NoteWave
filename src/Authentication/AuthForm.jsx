@@ -12,11 +12,7 @@ export default function AuthForm({ formFunction, formAction }) {
   if (formAction === "Sign Up") {
     altForm = "Login";
     altFormLink = "";
-    altFormTitle = <Link to="/login">"Already have a account?"</Link>;
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
+    // altFormTitle = <Link to="/login">"Already have a account?"</Link>;
   }
 
   return (
