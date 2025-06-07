@@ -31,6 +31,7 @@ import { auth } from './firebase-config';
 import './index.css';
 import NavBar from './Layout.jsx';
 import Groups from './Groups.jsx';
+import AddGroups from './AddGroups.jsx';
 function App(){
 const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true); 
@@ -55,6 +56,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
         >
           <Route index element={<Home />} />
           <Route path="groups" element={<Groups />} />
+          <Route path="/add-group" element={<AddGroups />} />
           
         </Route>
 
