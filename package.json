@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "@schedule-x/calendar": "^2.31.1",
     "@schedule-x/drag-and-drop": "^2.31.1",
     "@schedule-x/event-modal": "^2.31.1",
@@ -19,6 +20,7 @@
     "@tailwindcss/vite": "^4.1.4",
     "firebase": "^11.8.1",
     "fuse.js": "^7.1.0",
+    "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.6.1",

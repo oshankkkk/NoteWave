@@ -1,21 +1,21 @@
-:root{
-    --side-color:#f4f4f4;
-    --bg-color:#fff;
-    --btn-color:#a214ce;
-    --hover-color:#97f9ef;
-    --hover-text:#222222;
-    --text-color:#696767;
 
-}
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  
+  --side-color:#f4f4f4;
+  --bg-color:#fff;
+  --btn-color:#a214ce;
+  --hover-color:#97f9ef;
+  --hover-text:#222222;
+  --text-color:#696767;
+  
 }
 body{
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-color);
-    
+    width:100%;
+    margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 #logo{
   width:10%;
