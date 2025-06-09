@@ -1,35 +1,16 @@
 
-// import React from 'react';
-// import Calendar from './Calendar'; // Make sure the path is correct
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Home from "./Home";
+import "./styles/App.css";
 
-// function App() {
-//     return (
-//         <div>
-//             <Calendar />
-//         </div>
-//     );
-// }
-
-// export default App;
-
-// import LoginPage from "./LoginPage"
-// import SignUpPage from "./SignUpPage"
-// function App(){
-
-// return(
-// <SignUpPage></SignUpPage>
-// )
-
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Home from './Home';
-import "./App.css";
-import LoginPage from './Login.jsx';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase-config'; 
 import './index.css';
 import NavBar from './Layout.jsx';
+import SignUpPage from './Authentication/SignUpPage.jsx';
+import LoginPage from './Authentication/LoginPage.jsx';
+
 import Groups from './Groups.jsx';
 import AddGroups from './AddGroups.jsx';
 function App(){
@@ -38,15 +19,18 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsLoggedIn(!!user);  
+      setIsLoggedIn(!!user);
       setLoading(false);
     });
 
-    
     return () => unsubscribe();
   }, []);
 
   return (
+    // <div>
+    //   <Sidebar />
+    //   <Groups />
+    // </div>
     <BrowserRouter>
       <Routes>
         {/* Protected routes under AppLayout */}
@@ -63,25 +47,20 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
         {/* Public route */}
         <Route
           path="/login"
-          element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />}
+          element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />}
         />
+        <Route path="/signup" element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />} />
+        <Route path="/login" element={!isLoggedIn ? <LoginPage/> : <Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-export default App;
+// import LoginPage from './Authentication/LoginPage.jsx';
 
-// import React from "react";
-// import { Sidebar } from "./assets/SideBar/Sidebar";
-// im
-// port Groups from "./Components/Groups";
+// function App(){
 
-// function App() {
-//   return (
-//     <div>
-//       <Sidebar />
-//       <Groups />
-//     </div>
-//   );
+// return(
+// <LoginPage/>
+// )
 // }
-// export default App;
+export default App;
