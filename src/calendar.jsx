@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // ScheduleX core components and plugins
 import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/react';
@@ -28,21 +28,15 @@ const formatForScheduleX = (isoString) => {
   const hh = String(date.getHours()).padStart(2, '0');
   const min = String(date.getMinutes()).padStart(2, '0');
 
-  const formatted = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
-  console.log(`📆 ${isoString} → ${formatted}`);
-  return formatted;
+  return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
 };
 
-function Calendar() {
+function Calendar({ initialEvents = [] }) {
   // Local state for events and selected date
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0] // Default to today
+    new Date().toISOString().split('T')[0]
   );
-
-  // Google API credentials
-  const GOOGLE_API_KEY = 'AIzaSyBOH2oXTIO0MvK-eOgUvsqmiOLBWzm6-Dw';
-  const GOOGLE_CLIENT_ID = '19900462508-vbkiucsn95h5kususcc8qc05uf5s00o3.apps.googleusercontent.com';
 
   // Initialize ScheduleX calendar app with views and plugins
   const calendar = useCalendarApp({
@@ -52,17 +46,58 @@ function Calendar() {
     plugins: [createEventModalPlugin(), createDragAndDropPlugin()],
   });
 
+  // Sync ScheduleX calendar events whenever `events` state changes
+  useEffect(() => {
+    if (events && events.length > 0 && calendar) {
+      console.log('🔄 Syncing events with ScheduleX');
+      calendar.events.update(events);
+
+      const currentEvents = calendar.events.getAll();
+      console.log('📋 Events currently shown in the calendar:', currentEvents);
+    }
+  }, [events, calendar]);
+
+  // When component mounts or initialEvents change, load them
+  useEffect(() => {
+    if (initialEvents.length > 0) {
+      console.log('⏳ Loading initial events passed as prop:', initialEvents.length);
+
+      // Assume initialEvents are in Google event format, so map and format
+      const googleEvents = initialEvents.map((event) => {
+        const rawStart = event.start?.dateTime || `${event.start?.date}T00:00:00`;
+        const rawEnd = event.end?.dateTime || `${event.end?.date}T23:59:00`;
+
+        return {
+          id: event.id || Date.now().toString(),
+          title: event.summary || 'No Title',
+          start: formatForScheduleX(rawStart),
+          end: formatForScheduleX(rawEnd),
+        };
+      });
+
+      setEvents(googleEvents);
+
+      // Jump to first event's start date if available
+      if (googleEvents.length > 0) {
+        setSelectedDate(googleEvents[0].start.split(' ')[0]);
+      }
+    }
+  }, [initialEvents]);
+
+  // Google API credentials
+  const GOOGLE_API_KEY = 'AIzaSyBOH2oXTIO0MvK-eOgUvsqmiOLBWzm6-Dw';
+  const GOOGLE_CLIENT_ID =
+    '19900462508-vbkiucsn95h5kususcc8qc05uf5s00o3.apps.googleusercontent.com';
+
   /**
    * Fetch events from Google Calendar using accessToken
    */
   const fetchGoogleCalendarEvents = (accessToken) => {
     console.log('📡 Starting fetchGoogleCalendarEvents with token:', accessToken);
 
-    // Load the gapi client
     window.gapi.load('client', () => {
       console.log('✅ gapi client loaded');
 
-      // Initialize Google API client
       window.gapi.client
         .init({
           apiKey: GOOGLE_API_KEY,
@@ -73,7 +108,6 @@ function Calendar() {
         .then(() => {
           console.log('✅ gapi client initialized');
 
-          // Request primary calendar events
           return window.gapi.client.request({
             path: 'https://www.googleapis.com/calendar/v3/calendars/primary/events',
             headers: {
@@ -85,15 +119,15 @@ function Calendar() {
           const allItems = response.result.items || [];
           console.log('📦 Raw items:', allItems.length);
 
-          // Filter only events with a title and start time
+          // Filter out events with no summary or no start time
           const validEvents = allItems.filter(
             (event) => event.summary && (event.start?.dateTime || event.start?.date)
           );
 
           console.log('✅ Valid (non-empty) events:', validEvents.length);
-          console.table(validEvents.slice(0, 5)); // Show top 5 for quick review
+          console.table(validEvents.slice(0, 5));
 
-          // Format Google events into ScheduleX format
+          // Map Google events into ScheduleX event format
           const googleEvents = validEvents.map((event) => {
             const rawStart = event.start.dateTime || `${event.start.date}T00:00:00`;
             const rawEnd = event.end.dateTime || `${event.end.date}T23:59:00`;
@@ -106,10 +140,21 @@ function Calendar() {
             };
           });
 
-          console.log('🧩 Mapped Events for ScheduleX:', googleEvents.slice(0, 5));
-          setEvents([...googleEvents]); // Update state with new events
+          // Update local state with Google events
+          //setEvents();
+          const scheduleXEvents = googleEvents.map(event => ({
+            id: event.id,
+            title: event.title,
+            start: formatForScheduleX(event.start),
+            end: formatForScheduleX(event.end),
+          }));
+          
+          // Then update the calendar once with the full array
+          calendar.events.set(scheduleXEvents);
+          //calendar.events.set([event]);
+          console.log(googleEvents);
 
-          // Jump calendar to the first event's date
+          // Update selectedDate to first event's start date if available
           if (googleEvents.length > 0) {
             const firstDate = googleEvents[0].start.split(' ')[0];
             console.log('📍 Jumping calendar to:', firstDate);
@@ -131,7 +176,6 @@ function Calendar() {
       return;
     }
 
-    // Initialize token client to request access token
     const tokenClient = window.google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
       scope: 'https://www.googleapis.com/auth/calendar.readonly',
@@ -152,20 +196,33 @@ function Calendar() {
     const title = prompt('Enter event title:');
     if (!title) return;
 
-    const startInput = prompt('Enter start datetime (YYYY-MM-DDTHH:mm:ss):');
-    if (!startInput) return;
+    const start = prompt('Enter start datetime (YYYY-MM-DD HH:mm):');
+    if (!start) return;
 
-    const endInput = prompt('Enter end datetime (YYYY-MM-DDTHH:mm:ss):');
-    if (!endInput) return;
+    const end = prompt('Enter end datetime (YYYY-MM-DD HH:mm):');
+    if (!end) return;
+
+    const dateTimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+    if (!dateTimeRegex.test(start) || !dateTimeRegex.test(end)) {
+      alert('❌ Please use the format: YYYY-MM-DD HH:mm');
+      return;
+    }
 
     const newEvent = {
-      id: Date.now(),
+      id: Date.now().toString(),
       title,
-      start: formatForScheduleX(startInput),
-      end: formatForScheduleX(endInput),
+      start,
+      end,
     };
 
-    setEvents((prev) => [...prev, newEvent]);
+    if (calendar?.events) {
+      const updatedEvents = [...calendar.events.getAll(), newEvent];
+      calendar.events.update(updatedEvents);
+      setEvents(updatedEvents);
+      console.log('✅ Added new event:', newEvent);
+    } else {
+      console.warn('⛔ Calendar not ready yet. Try again in a few seconds.');
+    }
   };
 
   return (
@@ -188,7 +245,9 @@ function Calendar() {
       </div>
 
       {/* Add Event Button */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}
+      >
         <button
           onClick={addEvent}
           style={{
@@ -204,8 +263,8 @@ function Calendar() {
         </button>
       </div>
 
-      {/* Render the calendar, re-renders when selectedDate changes */}
-      <ScheduleXCalendar key={selectedDate} calendarApp={calendar} />
+      {/* Render the calendar */}
+      {calendar && <ScheduleXCalendar calendarApp={calendar} />}
     </div>
   );
 }
