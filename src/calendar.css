@@ -15,12 +15,11 @@
 
 
 .sx__event {
-  background-color: #9333ea !important; /* Bright green */
+  background-color: #22c55e !important; /* Bright green */
   color: white !important;
   font-weight: bold;
   border: 2px solid black !important;
   z-index: 999 !important;
-  border: 10px;
 }
 
 

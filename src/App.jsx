@@ -1,6 +1,6 @@
 import React from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import Calendar from './Calendar'; 
+import Calendar from './Calendar'; // Adjust the path if needed
 
 function App() {
     return (
