@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 
 // ScheduleX core components and plugins
+=======
+>>>>>>> origin/main
 import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/react';
 import { createViewMonthGrid, createViewWeek } from '@schedule-x/calendar';
 import { createEventModalPlugin } from '@schedule-x/event-modal';
@@ -8,7 +11,26 @@ import { createDragAndDropPlugin } from '@schedule-x/drag-and-drop';
 
 // CSS for ScheduleX and custom styling
 import '@schedule-x/theme-default/dist/calendar.css';
+<<<<<<< HEAD
 import './calendar.css';
+=======
+import './styles/calendar.css';
+function Calender() {
+    const [events, setEvents] = useState([
+        {
+            id: 1,
+            title: 'Event 1',
+            start: '2025-01-01 00:00',
+            end: '2025-01-01 02:00',
+        },
+        {
+            id: 2,
+            title: 'Event 2',
+            start: '2025-01-02 02:00',
+            end: '2025-01-02 04:00',
+        }
+    ]);
+>>>>>>> origin/main
 
 /**
  * Converts ISO datetime string into ScheduleX format: 'YYYY-MM-DD HH:mm'
@@ -210,4 +232,8 @@ function Calendar() {
   );
 }
 
+<<<<<<< HEAD
 export default Calendar;
+=======
+export default Calender;
+>>>>>>> origin/main

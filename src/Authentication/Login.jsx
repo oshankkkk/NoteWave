@@ -1,22 +1,7 @@
-import { useState } from "react";
 import { handleGoogleSignup } from "./AuthFunctions";
-export default function AuthForm({formFunction,formAction}) {
-  const [email, setEmail] = useState("");
-  const[password, setPassword] = useState("");
- 
-  let altForm="Sign Up"
-  let altFormLink=""
-  let altFormTitle="Dont have a account?"
-  if(formAction==="Sign Up"){
-      altForm="Login"
-      altFormLink=""
-      altFormTitle="Already have a account?"
-  }
-
-
-
+function LoginForm() {
   return (
-    <>
+  <div className="min-h-screen fixed inset-y-0 py-5  right-3 w-[30%] flex flex-col items-center justify-center ">
       <div className=" bg-white  w-full rounded-2xl h-full flex flex-col items-center justify-center">
         <div className="w-2/3">
           <h2 className="text-3xl font-semibold text-center mb-4">
@@ -26,10 +11,6 @@ export default function AuthForm({formFunction,formAction}) {
           <h4 className="text-lg text-center mb-4">
             Please login or sign up to continue
           </h4>
-
-
-
-
 
           <button
             onClick={handleGoogleSignup}
@@ -58,13 +39,13 @@ export default function AuthForm({formFunction,formAction}) {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              {altFormTitle}{" "}
+              Dont have a account? 
+              {" "}
               <a
                 href="#"
                 className="text-purple-600  font-medium transition-colors duration-200"
               >
-
-                {altForm}
+              Sign in
               </a>
             </p>
           </div>
@@ -83,5 +64,7 @@ export default function AuthForm({formFunction,formAction}) {
           </div>
         </div>
       </div>
-    </>
-  );}
+  </div>
+  )}
+
+export default LoginForm;
