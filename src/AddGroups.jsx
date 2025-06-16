@@ -12,23 +12,34 @@ function AddGroups() {
     e.preventDefault();
 
     try {
+      // Step 1: Create a new Chat document (empty for now)
+      const chatRef = await addDoc(collection(db, "Chat"), {
+        messages: [] // optional: start with an empty messages array
+      });
+
+      // Step 2: Get the auto-generated chatId
+      const chatId = chatRef.id;
+
+      // Step 3: Create the Group with chatId included
       await addDoc(collection(db, "Group"), {
-        Admin: "",               // Can be set later
-        Icon: "",                // Can be updated after image upload
-        Member: 0,               // Initial member count
+        Admin: "",
+        Icon: "",
+        Member: 0,
         Name: groupName,
         Description: description,
         Public: isPublic,
-        unreadCnt: {}
+        unreadCnt: {},
+        chatId: chatId
       });
 
-      alert("Group added successfully!");
+      alert("Group and chat created successfully!");
       setGroupName("");
       setDescription("");
       setIsPublic(true);
     } catch (error) {
-      console.error("Error adding group:", error);
+      console.error("Error creating group and chat:", error);
       alert("Failed to add group. Please try again.");
+      
     }
   };
 
@@ -70,7 +81,6 @@ function AddGroups() {
         </select>
       </label>
 
-      {/* Submit */}
       <button
         type="submit"
         className="w-full bg-fuchsia-800 text-white rounded py-2 hover:bg-fuchsia-900"
