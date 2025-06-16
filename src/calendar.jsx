@@ -1,72 +1,66 @@
-<<<<<<< HEAD
-import React, { useState } from 'react';
-
-// ScheduleX core components and plugins
-=======
->>>>>>> origin/main
+import React, { useEffect, useState } from 'react';
 import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/react';
 import { createViewMonthGrid, createViewWeek } from '@schedule-x/calendar';
 import { createEventModalPlugin } from '@schedule-x/event-modal';
 import { createDragAndDropPlugin } from '@schedule-x/drag-and-drop';
-
-// CSS for ScheduleX and custom styling
 import '@schedule-x/theme-default/dist/calendar.css';
-<<<<<<< HEAD
 import './calendar.css';
-=======
-import './styles/calendar.css';
-function Calender() {
-    const [events, setEvents] = useState([
-        {
-            id: 1,
-            title: 'Event 1',
-            start: '2025-01-01 00:00',
-            end: '2025-01-01 02:00',
-        },
-        {
-            id: 2,
-            title: 'Event 2',
-            start: '2025-01-02 02:00',
-            end: '2025-01-02 04:00',
-        }
-    ]);
->>>>>>> origin/main
 
-/**
- * Converts ISO datetime string into ScheduleX format: 'YYYY-MM-DD HH:mm'
- */
+const GOOGLE_API_KEY = 'AIzaSyBOH2oXTIO0MvK-eOgUvsqmiOLBWzm6-Dw';
+const GOOGLE_CLIENT_ID = '19900462508-vbkiucsn95h5kususcc8qc05uf5s00o3.apps.googleusercontent.com';
+
 const formatForScheduleX = (isoString) => {
   if (!isoString) return '';
-
   const date = new Date(isoString);
-  if (isNaN(date.getTime())) {
-    console.warn('⛔ Invalid date format:', isoString);
-    return '';
-  }
-
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-
-  const formatted = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
-  console.log(`📆 ${isoString} → ${formatted}`);
-  return formatted;
+  if (isNaN(date.getTime())) return '';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 };
 
-function Calendar() {
-  // Local state for events and selected date
-  const [events, setEvents] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0] // Default to today
+// 🔹 AddMeetingForm component
+function AddMeetingForm({ onClose, onSubmit }) {
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [duration, setDuration] = useState(30);
+
+  const handleSubmit = () => {
+    if (!title || !date || !time || !duration) return alert('Fill in all fields');
+    const startDateTime = new Date(`${date}T${time}`);
+    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
+    onSubmit({ title, start: startDateTime, end: endDateTime });
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-box">
+        <h2>Schedule Google Meet</h2>
+        <label>Title</label>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} />
+        <label>Date</label>
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <label>Time</label>
+        <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+        <label>Duration (minutes)</label>
+        <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} />
+        <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
+          <button onClick={onClose}>Cancel</button>
+          <button onClick={handleSubmit} style={{ backgroundColor: '#9333ea', color: 'white' }}>
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
   );
+}
 
-  // Google API credentials
-  const GOOGLE_API_KEY = 'AIzaSyBOH2oXTIO0MvK-eOgUvsqmiOLBWzm6-Dw';
-  const GOOGLE_CLIENT_ID = '19900462508-vbkiucsn95h5kususcc8qc05uf5s00o3.apps.googleusercontent.com';
+function Calendar() {
+  const [accessToken, setAccessToken] = useState(null);
+  const [showMeetingForm, setShowMeetingForm] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [toastMessage, setToastMessage] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Initialize ScheduleX calendar app with views and plugins
   const calendar = useCalendarApp({
     views: [createViewMonthGrid(), createViewWeek()],
     selectedDate,
@@ -74,92 +68,115 @@ function Calendar() {
     plugins: [createEventModalPlugin(), createDragAndDropPlugin()],
   });
 
-  /**
-   * Fetch events from Google Calendar using accessToken
-   */
-  const fetchGoogleCalendarEvents = (accessToken) => {
-    console.log('📡 Starting fetchGoogleCalendarEvents with token:', accessToken);
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 3000);
+  };
 
-    // Load the gapi client
+  const fetchGoogleCalendarEvents = (token) => {
     window.gapi.load('client', () => {
-      console.log('✅ gapi client loaded');
-
-      // Initialize Google API client
       window.gapi.client
         .init({
           apiKey: GOOGLE_API_KEY,
-          discoveryDocs: [
-            'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
-          ],
+          discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
         })
         .then(() => {
-          console.log('✅ gapi client initialized');
-
-          // Request primary calendar events
           return window.gapi.client.request({
             path: 'https://www.googleapis.com/calendar/v3/calendars/primary/events',
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           });
         })
         .then((response) => {
-          const allItems = response.result.items || [];
-          console.log('📦 Raw items:', allItems.length);
-
-          // Filter only events with a title and start time
-          const validEvents = allItems.filter(
+          const validEvents = (response.result.items || []).filter(
             (event) => event.summary && (event.start?.dateTime || event.start?.date)
           );
 
-          console.log('✅ Valid (non-empty) events:', validEvents.length);
-          console.table(validEvents.slice(0, 5)); // Show top 5 for quick review
-
-          // Format Google events into ScheduleX format
-          const googleEvents = validEvents.map((event) => {
-            const rawStart = event.start.dateTime || `${event.start.date}T00:00:00`;
-            const rawEnd = event.end.dateTime || `${event.end.date}T23:59:00`;
-
+          const mapped = validEvents.map((event) => {
+            const start = event.start.dateTime || `${event.start.date}T00:00:00`;
+            const end = event.end.dateTime || `${event.end.date}T23:59:00`;
+            const meetLink = event.hangoutLink;
             return {
               id: event.id,
-              title: event.summary || 'No Title',
-              start: formatForScheduleX(rawStart),
-              end: formatForScheduleX(rawEnd),
+              title: event.summary,
+              start: formatForScheduleX(start),
+              end: formatForScheduleX(end),
+              description: `Join Meeting: ${meetLink}`,
             };
           });
 
-          console.log('🧩 Mapped Events for ScheduleX:', googleEvents.slice(0, 5));
-          setEvents([...googleEvents]); // Update state with new events
-
-          // Jump calendar to the first event's date
-          if (googleEvents.length > 0) {
-            const firstDate = googleEvents[0].start.split(' ')[0];
-            console.log('📍 Jumping calendar to:', firstDate);
-            setSelectedDate(firstDate);
+          calendar.events.set(mapped);
+          setEvents(mapped);
+          if (mapped.length > 0) {
+            setSelectedDate(mapped[0].start.split(' ')[0]);
           }
         })
-        .catch((err) => {
-          console.error('❌ Error in fetchGoogleCalendarEvents:', err);
-        });
+        .catch((err) => console.error('❌ Fetch Error:', err));
     });
   };
 
-  /**
-   * Handles Google login and token request
-   */
+  const createGoogleMeetEvent = (meetingData) => {
+    if (!accessToken) return alert('Please sign in first.');
+
+    const event = {
+      summary: meetingData.title,
+      start: {
+        dateTime: meetingData.start.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      end: {
+        dateTime: meetingData.end.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      conferenceData: {
+        createRequest: {
+          requestId: `${Date.now()}`,
+          conferenceSolutionKey: { type: 'hangoutsMeet' },
+        },
+      },
+    };
+
+    window.gapi.client.request({
+      path: 'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: { conferenceDataVersion: 1 },
+      body: event,
+    })
+      .then((response) => {
+        const result = response.result;
+        const meetLink = result.hangoutLink;
+
+        const newEvent = {
+          id: result.id,
+          title: result.summary,
+          start: formatForScheduleX(result.start.dateTime),
+          end: formatForScheduleX(result.end.dateTime),
+          description: `Join Meeting: ${meetLink}`, // ✅ plain text now
+        };
+
+        const updated = [...events, newEvent];
+        setEvents(updated);
+        calendar.events.set(updated);
+
+        showToast('✅ Meeting created and added to calendar!');
+      })
+      .catch((err) => console.error('❌ Meet creation failed:', err));
+  };
+
   const handleGoogleAuth = () => {
-    if (!window.google || !window.google.accounts) {
+    if (!window.google?.accounts) {
       alert('Google Identity Services SDK not loaded.');
       return;
     }
 
-    // Initialize token client to request access token
     const tokenClient = window.google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/calendar.readonly',
+      scope: 'https://www.googleapis.com/auth/calendar.events',
       prompt: 'consent',
       callback: (tokenResponse) => {
-        console.log('✅ Access Token received:', tokenResponse.access_token);
+        setAccessToken(tokenResponse.access_token);
         fetchGoogleCalendarEvents(tokenResponse.access_token);
       },
     });
@@ -167,73 +184,71 @@ function Calendar() {
     tokenClient.requestAccessToken();
   };
 
-  /**
-   * Allows user to manually add an event via prompt
-   */
-  const addEvent = () => {
-    const title = prompt('Enter event title:');
-    if (!title) return;
-
-    const startInput = prompt('Enter start datetime (YYYY-MM-DDTHH:mm:ss):');
-    if (!startInput) return;
-
-    const endInput = prompt('Enter end datetime (YYYY-MM-DDTHH:mm:ss):');
-    if (!endInput) return;
-
-    const newEvent = {
-      id: Date.now(),
-      title,
-      start: formatForScheduleX(startInput),
-      end: formatForScheduleX(endInput),
-    };
-
-    setEvents((prev) => [...prev, newEvent]);
-  };
-
   return (
     <div style={{ padding: '20px' }}>
-      {/* Google Login Button */}
-      <div style={{ marginBottom: '16px' }}>
+      {/* 🔸 Aligned Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <button
           onClick={handleGoogleAuth}
           style={{
-            padding: '10px 20px',
-            backgroundColor: '#4285F4',
+            
+            backgroundColor: '#ad5eeb',
             color: 'white',
             border: 'none',
             borderRadius: '4px',
             cursor: 'pointer',
+            
           }}
         >
           Sign in with Google
         </button>
-      </div>
 
-      {/* Add Event Button */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
         <button
-          onClick={addEvent}
+          onClick={() => setShowMeetingForm(true)}
           style={{
-            padding: '8px 16px',
-            backgroundColor: '#9333ea',
+            
+            backgroundColor: '#ad5eeb',
             color: 'white',
             border: 'none',
             borderRadius: '6px',
             cursor: 'pointer',
           }}
         >
-          + Add Event
+          + Add Meeting
         </button>
       </div>
 
-      {/* Render the calendar, re-renders when selectedDate changes */}
+      {showMeetingForm && (
+        <AddMeetingForm
+          onClose={() => setShowMeetingForm(false)}
+          onSubmit={(meetingData) => {
+            createGoogleMeetEvent(meetingData);
+          }}
+        />
+      )}
+
       <ScheduleXCalendar key={selectedDate} calendarApp={calendar} />
+
+      {toastMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#323232',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+            zIndex: 999,
+          }}
+        >
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }
 
-<<<<<<< HEAD
 export default Calendar;
-=======
-export default Calender;
->>>>>>> origin/main

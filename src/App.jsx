@@ -1,7 +1,33 @@
+// import React from 'react';
+// import Calendar from './Calendar'; // Make sure the path is correct
+
+// function App() {
+//     return (
+//         <div>
+//             <Calendar />
+//         </div>
+//     );
+// }
+
+// export default App;
+
+// import LoginPage from "./LoginPage"
+// import SignUpPage from "./SignUpPage"
+// function App(){
+
+// return(
+// <SignUpPage></SignUpPage>
+// )
+
+import React from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import Calendar from './Calendar';
+
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Home";
 import "./styles/App.css";
+
 
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -37,6 +63,14 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
           element={isLoggedIn ? <NavBar /> : <Navigate to="/login" replace />}
         >
           <Route index element={<Home />} />
+
+
+          <Route path='/calendar' index element={
+            <GoogleOAuthProvider clientId="19900462508-vbkiucsn95h5kususcc8qc05uf5s00o3.apps.googleusercontent.com">
+            <div>
+                <Calendar />
+            </div>
+            </GoogleOAuthProvider>} />
          
         </Route>
 
@@ -51,13 +85,19 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
     </BrowserRouter>
   );
 }
-
-// import LoginPage from './Authentication/LoginPage.jsx';
-
-// function App(){
-
-// return(
-// <LoginPage/>
-// )
-// }
 export default App;
+
+// import React from "react";
+// import { Sidebar } from "./assets/SideBar/Sidebar";
+// im
+// port Groups from "./Components/Groups";
+
+// function App() {
+//   return (
+//     <div>
+//       <Sidebar />
+//       <Groups />
+//     </div>
+//   );
+// }
+// export default App;
