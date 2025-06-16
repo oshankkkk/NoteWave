@@ -71,7 +71,6 @@ useEffect(() => {
               </button>
             )}
           </div>
-
           {query.length > 0 && (
             <div className="search-feedback">
               <SearchGroups query={query} />
