@@ -20,10 +20,9 @@
     "firebase": "^11.8.1",
     "fuse.js": "^7.1.0",
     "react": "^19.0.0",
-
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.6.1",
     "react-firebase-hooks": "^5.1.1",
+    "react-router-dom": "^7.6.2",
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
