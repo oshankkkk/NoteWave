@@ -1,14 +1,14 @@
 // src/components/Groups.jsx
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase"; // ✅ Adjust path if needed
+import { db } from "./firebase-config"; // ✅ Adjust path if needed
 import { useNavigate } from "react-router-dom";
 import { joinPublic } from "./JoinGroups";
 import { useUser } from "./AuthContext";
 
 function GroupsCards() {
   const [publicGroups, setPublicGroups] = useState([]);
-  const {user}=useUser();
+  const { user } = useUser();
   const handleJoin = async (groupId) => {
     await joinPublic(user, groupId); // pass user here
   };
@@ -27,7 +27,9 @@ function GroupsCards() {
               name: data.Name,
               description: data.Description,
               members: data.Member,
-              image: data.Icon ? `/Images/publicGroupIcons/${data.Icon}` : "/default-group-icon.png", // fallback icon
+              image: data.Icon
+                ? `/Images/publicGroupIcons/${data.Icon}`
+                : "/default-group-icon.png", // fallback icon
             });
           }
         });
@@ -60,12 +62,19 @@ function GroupsCards() {
             </div>
           </div>
           <div className="w-full flex justify-between mt-4 px-1">
-            <button className="font-[14px] text-white bg-fuchsia-800 px-3 py-1 rounded shadow-sm cursor-pointer hover:bg-fuchsia-900" onClick={()=>{handleJoin(group.id)}}>
+            <button
+              className="font-[14px] text-white bg-fuchsia-800 px-3 py-1 rounded shadow-sm cursor-pointer hover:bg-fuchsia-900"
+              onClick={() => {
+                handleJoin(group.id);
+              }}
+            >
               Join
             </button>
             {console.log(group)}
-            
-            <span className="text-sm text-gray-600">{Object.keys(group.members || {}).length} users</span>
+
+            <span className="text-sm text-gray-600">
+              {Object.keys(group.members || {}).length} users
+            </span>
           </div>
         </div>
       ))}
@@ -96,7 +105,9 @@ function Groups() {
     <div className="bg-fuchsia-100 pt-1">
       <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-[20px] md:grid-cols-[repeat(3,294px)] gap-y-5 md:gap-x-[20px] justify-center px-4">
         <div className="grid grid-cols-2 justify-between col-span-3">
-          <h1 className="text-2xl font-sans font-bold mb-[10px]">Popular Groups</h1>
+          <h1 className="text-2xl font-sans font-bold mb-[10px]">
+            Popular Groups
+          </h1>
           <AddGroupsButton />
         </div>
 
