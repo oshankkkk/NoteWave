@@ -2,21 +2,20 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Home";
 import "./styles/App.css";
 
-import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase-config'; 
-import './index.css';
-import NavBar from './Layout.jsx';
-import SignUpPage from './Authentication/SignUpPage.jsx';
-import LoginPage from './Authentication/LoginPage.jsx';
-
-import Groups from './Groups.jsx';
-import AddGroups from './AddGroups.jsx';
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase-config";
+import "./index.css";
+import NavBar from "./Layout.jsx";
+import SignUpPage from "./Authentication/SignUpPage.jsx";
+import LoginPage from "./Authentication/LoginPage.jsx";
+import Groups from "./Groups.jsx";
+import AddGroups from "./AddGroups.jsx";
 import { AuthProvider } from "./AuthContext.jsx"; // ✅ make sure this file exists and is exported
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

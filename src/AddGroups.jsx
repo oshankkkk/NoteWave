@@ -1,6 +1,6 @@
 // src/components/AddGroups.jsx
 import React, { useState } from "react";
-import { db } from "./firebase";
+import { db } from "./firebase-config";
 import { collection, addDoc } from "firebase/firestore";
 
 import { useUser } from "./AuthContext";
@@ -21,18 +21,10 @@ function AddGroups() {
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
-  
 
- 
   const { user } = useUser();
 
- 
-  
- 
-
-
   const handleSubmit = async (e) => {
-     
     e.preventDefault();
 
     if (!selectedIcon) {
@@ -42,7 +34,7 @@ function AddGroups() {
 
     try {
       const chatRef = await addDoc(collection(db, "Chat"), {
-        messages: []
+        messages: [],
       });
 
       const chatId = chatRef.id;
@@ -50,12 +42,12 @@ function AddGroups() {
       await addDoc(collection(db, "Group"), {
         Admin: user.uid,
         Icon: selectedIcon,
-        Member: {[user.uid]:true},
+        Member: { [user.uid]: true },
         Name: groupName,
         Description: description,
         Public: isPublic,
         unreadCnt: {},
-        chatId: chatId
+        chatId: chatId,
       });
 
       alert("Group and chat created successfully!");
@@ -69,9 +61,11 @@ function AddGroups() {
     }
   };
 
-
   return (
-    <form onSubmit={handleSubmit} className="p-4 max-w-md mx-auto bg-white rounded shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 max-w-md mx-auto bg-white rounded shadow"
+    >
       {/* Icon Selection */}
       <label className="block mb-4">
         <span className="block mb-2 font-semibold">Select a Group Icon</span>
@@ -82,7 +76,9 @@ function AddGroups() {
               src={`/Images/publicGroupIcons/${icon}`}
               alt={`Group Icon ${idx + 1}`}
               className={`w-[74px] h-[74px] rounded-full object-cover cursor-pointer border-2 ${
-                selectedIcon === icon ? "border-fuchsia-800" : "border-transparent"
+                selectedIcon === icon
+                  ? "border-fuchsia-800"
+                  : "border-transparent"
               }`}
               onClick={() => setSelectedIcon(icon)}
             />
@@ -128,7 +124,6 @@ function AddGroups() {
           <option value="false">Private</option>
         </select>
       </label>
-      
 
       {/* Submit Button */}
       <button
