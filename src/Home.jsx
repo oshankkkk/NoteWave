@@ -135,8 +135,12 @@ function Home() {
         <ul id="grp-container">
           <h2 id="main-title">Conversations</h2>
           {groups.map(group => (
+            
             <div key={group.id} className="img-msg" onClick={() => resetUnreadCount(group.id)}>
-              <img className="grp-icon" src="/Images/spare-avatar.png" alt="Group icon" />
+              {
+                console.log(group.Icon)
+              }
+              <img className="grp-icon" src={`/Images/publicGroupIcons/${group.Icon}`} alt="Group icon" />
               <span>{group.Name}</span>
               {group.unreadCount > 0 && (
                 <span className="unread-cnt">{group.unreadCount}</span>

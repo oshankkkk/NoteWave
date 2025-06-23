@@ -3,9 +3,15 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase"; // ✅ Adjust path if needed
 import { useNavigate } from "react-router-dom";
+import { joinPublic } from "./JoinGroups";
+import { useUser } from "./AuthContext";
 
 function GroupsCards() {
   const [publicGroups, setPublicGroups] = useState([]);
+  const {user}=useUser();
+  const handleJoin = async (groupId) => {
+    await joinPublic(user, groupId); // pass user here
+  };
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -21,7 +27,7 @@ function GroupsCards() {
               name: data.Name,
               description: data.Description,
               members: data.Member,
-              image: data.Icon || "/default-group-icon.png", // fallback icon
+              image: data.Icon ? `/Images/publicGroupIcons/${data.Icon}` : "/default-group-icon.png", // fallback icon
             });
           }
         });
@@ -54,10 +60,12 @@ function GroupsCards() {
             </div>
           </div>
           <div className="w-full flex justify-between mt-4 px-1">
-            <button className="font-[14px] text-white bg-fuchsia-800 px-3 py-1 rounded shadow-sm cursor-pointer hover:bg-fuchsia-900">
+            <button className="font-[14px] text-white bg-fuchsia-800 px-3 py-1 rounded shadow-sm cursor-pointer hover:bg-fuchsia-900" onClick={()=>{handleJoin(group.id)}}>
               Join
             </button>
-            <span className="text-sm text-gray-600">{group.members || 0} members</span>
+            {console.log(group)}
+            
+            <span className="text-sm text-gray-600">{Object.keys(group.members || {}).length} users</span>
           </div>
         </div>
       ))}

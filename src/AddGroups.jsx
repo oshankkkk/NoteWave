@@ -3,28 +3,54 @@ import React, { useState } from "react";
 import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 
+import { useUser } from "./AuthContext";
+
+const iconOptions = [
+  "Icon1.png",
+  "Icon2.png",
+  "Icon3.png",
+  "Icon4.png",
+  "Icon5.png",
+  "Icon6.png",
+  "Icon7.png",
+  "Icon8.png",
+];
+
 function AddGroups() {
+  const [selectedIcon, setSelectedIcon] = useState("");
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+  
+
+ 
+  const { user } = useUser();
+
+ 
+  
+ 
+
 
   const handleSubmit = async (e) => {
+     
     e.preventDefault();
 
+    if (!selectedIcon) {
+      alert("Please select a group icon.");
+      return;
+    }
+
     try {
-      // Step 1: Create a new Chat document (empty for now)
       const chatRef = await addDoc(collection(db, "Chat"), {
-        messages: [] // optional: start with an empty messages array
+        messages: []
       });
 
-      // Step 2: Get the auto-generated chatId
       const chatId = chatRef.id;
 
-      // Step 3: Create the Group with chatId included
       await addDoc(collection(db, "Group"), {
         Admin: "",
-        Icon: "",
-        Member: 0,
+        Icon: selectedIcon,
+        Member: {[user.uid]:true},
         Name: groupName,
         Description: description,
         Public: isPublic,
@@ -33,18 +59,38 @@ function AddGroups() {
       });
 
       alert("Group and chat created successfully!");
+      setSelectedIcon("");
       setGroupName("");
       setDescription("");
       setIsPublic(true);
     } catch (error) {
       console.error("Error creating group and chat:", error);
       alert("Failed to add group. Please try again.");
-      
     }
   };
 
+
   return (
     <form onSubmit={handleSubmit} className="p-4 max-w-md mx-auto bg-white rounded shadow">
+      {/* Icon Selection */}
+      <label className="block mb-4">
+        <span className="block mb-2 font-semibold">Select a Group Icon</span>
+        <div className="grid grid-cols-4">
+          {iconOptions.map((icon, idx) => (
+            <img
+              key={idx}
+              src={`/Images/publicGroupIcons/${icon}`}
+              alt={`Group Icon ${idx + 1}`}
+              className={`w-[74px] h-[74px] rounded-full object-cover cursor-pointer border-2 ${
+                selectedIcon === icon ? "border-fuchsia-800" : "border-transparent"
+              }`}
+              onClick={() => setSelectedIcon(icon)}
+            />
+          ))}
+        </div>
+      </label>
+
+      {/* Group Name */}
       <label className="block mb-4">
         Group Name
         <input
@@ -57,6 +103,7 @@ function AddGroups() {
         />
       </label>
 
+      {/* Description */}
       <label className="block mb-4">
         Description
         <input
@@ -69,6 +116,7 @@ function AddGroups() {
         />
       </label>
 
+      {/* Visibility */}
       <label className="block mb-4">
         Visibility
         <select
@@ -80,7 +128,9 @@ function AddGroups() {
           <option value="false">Private</option>
         </select>
       </label>
+      
 
+      {/* Submit Button */}
       <button
         type="submit"
         className="w-full bg-fuchsia-800 text-white rounded py-2 hover:bg-fuchsia-900"
