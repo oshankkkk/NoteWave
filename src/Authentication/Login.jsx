@@ -1,15 +1,15 @@
 import { handleGoogleSignup } from "./AuthFunctions";
 function LoginForm() {
   return (
-  <div className="min-h-screen fixed inset-y-0 py-5  right-3 w-[30%] flex flex-col items-center justify-center ">
-      <div className=" bg-white  w-full rounded-2xl h-full flex flex-col items-center justify-center">
+  <div className="min-h-screen  py-5  bg-purple-600 flex flex-col items-center justify-center ">
+      <div className=" bg-white  p-5 rounded-2xl h-full flex flex-col items-center justify-center">
         <div className="w-2/3">
           <h2 className="text-3xl font-semibold text-center mb-4">
             lets start learning
           </h2>
 
           <h4 className="text-lg text-center mb-4">
-            Please login or sign up to continue
+            Please login to continue
           </h4>
 
           <button
