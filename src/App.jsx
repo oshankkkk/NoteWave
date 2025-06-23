@@ -11,6 +11,10 @@ import SignUpPage from "./Authentication/SignUpPage.jsx";
 import LoginPage from "./Authentication/LoginPage.jsx";
 import Groups from "./components/Groups.jsx";
 
+import Groups from "./Groups.jsx";
+import AddGroups from "./AddGroups.jsx";
+import { AuthProvider } from "./AuthContext.jsx"; // ✅ make sure this file exists and is exported
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -24,45 +28,35 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  return (
-    // <div>
-    //   <Sidebar />
-    //   <Groups />
-    // </div>
-    <BrowserRouter>
-      <Routes>
-        {/* Protected routes under AppLayout */}
-        <Route
-          path="/"
-          element={isLoggedIn ? <NavBar /> : <Navigate to="/login" replace />}
-        >
-          <Route index element={<Home />} />
-          <Route path="/groups" index element={<Groups />} />
-        </Route>
+  if (loading) return <p>Loading...</p>; // Optional: Show a loading indicator
 
-        {/* Public route */}
-        <Route
-          path="/login"
-          element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />}
-        />
-        <Route
-          path="/signup"
-          element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />}
-        />
-        <Route
-          path="/login"
-          element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />}
-        />
-      </Routes>
-    </BrowserRouter>
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Protected routes under NavBar */}
+          <Route
+            path="/"
+            element={isLoggedIn ? <NavBar /> : <Navigate to="/login" replace />}
+          >
+            <Route index element={<Home />} />
+            <Route path="groups" element={<Groups />} />
+            <Route path="add-group" element={<AddGroups />} />
+          </Route>
+
+          {/* Public routes */}
+          <Route
+            path="/login"
+            element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />}
+          />
+          <Route
+            path="/signup"
+            element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
-// import LoginPage from './Authentication/LoginPage.jsx';
 
-// function App(){
-
-// return(
-// <LoginPage/>
-// )
-// }
 export default App;
