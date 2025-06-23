@@ -1,7 +1,7 @@
 // src/components/AddGroups.jsx
 import React, { useState } from "react";
-import { db } from "./firebase";
-import {  updateDoc, arrayUnion ,doc} from "firebase/firestore";
+import { db } from "./firebase-config";
+import { updateDoc, arrayUnion, doc } from "firebase/firestore";
 
 async function joinPublic(user, groupId) {
   if (!user || !user.uid) {
@@ -20,6 +20,5 @@ async function joinPublic(user, groupId) {
   }
 }
 
-
 //function joinPrivate(){}
-export {joinPublic};
+export { joinPublic };
