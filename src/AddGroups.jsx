@@ -48,7 +48,7 @@ function AddGroups() {
       const chatId = chatRef.id;
 
       await addDoc(collection(db, "Group"), {
-        Admin: "",
+        Admin: user.uid,
         Icon: selectedIcon,
         Member: {[user.uid]:true},
         Name: groupName,
