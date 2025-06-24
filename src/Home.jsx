@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import SearchGroups from "./SearchGroups";
 import { auth } from "./firebase-config";
 import { getAuth, signOut } from "firebase/auth";
@@ -22,6 +22,9 @@ function Home() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [grpName, setName] = useState(null);
+  const [grpIcon, setIcon] = useState(null);
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
 
   // Track auth state to get user
   useEffect(() => {
@@ -111,7 +114,7 @@ function Home() {
     };
   }, [user]);
 
-  const loadChat = async (chatID, groupId) => {
+  const loadChat = async (chatID, groupId, groupName, groupIcon) => {
     if (!user) return;
     const groupRef = doc(db, "Group", groupId);
     try {
@@ -121,6 +124,9 @@ function Home() {
 
       console.log("Unread count reset to 0");
       setGrp(chatID);
+      setName(groupName);
+      setIcon(groupIcon);
+      setSelectedGroupId(groupId);
       console.log(chatID);
     } catch (e) {
       console.error("Failed to reset unread count:", e);
@@ -141,7 +147,7 @@ function Home() {
   }
 
   return (
-    <div>
+    <div className="home-main">
       {groups.length === 0 ? (
         <div className="par">
           <img src="/Images/no-groups.png" alt="No groups" className="alert" />
@@ -153,8 +159,12 @@ function Home() {
           {groups.map((group) => (
             <div
               key={group.id}
-              className="img-msg"
-              onClick={() => loadChat(group.chatId, group.id)}
+              className={`img-msg ${
+                selectedGroupId === group.id ? "selected" : ""
+              }`}
+              onClick={() =>
+                loadChat(group.chatId, group.id, group.Name, group.Icon)
+              }
             >
               <img
                 className="grp-icon"
@@ -174,7 +184,13 @@ function Home() {
           ))}
         </ul>
       )}
-      {grp && <ChatRoom2 chatId={grp}></ChatRoom2>}
+      {grp && (
+        <ChatRoom2
+          chatId={grp}
+          chatName={grpName}
+          chatIcon={grpIcon}
+        ></ChatRoom2>
+      )}
     </div>
   );
 }
