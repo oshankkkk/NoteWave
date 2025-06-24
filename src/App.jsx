@@ -10,7 +10,6 @@ import NavBar from "./Layout.jsx";
 import SignUpPage from "./Authentication/SignUpPage.jsx";
 import LoginPage from "./Authentication/LoginPage.jsx";
 import Groups from "./Groups.jsx";
-import AddGroups from "./AddGroups.jsx";
 import { AuthProvider } from "./AuthContext.jsx"; // ✅ make sure this file exists and is exported
 
 function App() {
@@ -39,7 +38,6 @@ function App() {
           >
             <Route index element={<Home />} />
             <Route path="groups" element={<Groups />} />
-            <Route path="add-group" element={<AddGroups />} />
           </Route>
 
           {/* Public routes */}

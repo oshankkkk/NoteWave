@@ -2,16 +2,32 @@
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase-config"; // ✅ Adjust path if needed
-import { useNavigate } from "react-router-dom";
 import { joinPublic } from "./JoinGroups";
 import { useUser } from "./AuthContext";
+import AddGroups from "./AddGroups";
+import { doc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import JoinPrivateGroupModal from "./JoinPrivateGroups";
 
 function GroupsCards() {
   const [publicGroups, setPublicGroups] = useState([]);
+  const [showAddGroupModal, setShowAddGroupModal] = useState(false);
   const { user } = useUser();
+  const navigate = useNavigate();
   const handleJoin = async (groupId) => {
-    await joinPublic(user, groupId); // pass user here
-  };
+  try {
+    await joinPublic(user, groupId); // ✅ Join logic
+
+    // 🔁 Get chatId from the group so we can open it in Home
+    const groupDoc = await getDoc(doc(db, "Group", groupId));
+    const chatId = groupDoc.exists() ? groupDoc.data().chatId : null;
+
+    // ✅ Redirect to home and auto-open the chat if available
+    navigate("/", { state: { autoOpenChatId: chatId } });
+  } catch (err) {
+    console.error("Error joining and redirecting:", err);
+  }
+};
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -82,25 +98,53 @@ function GroupsCards() {
   );
 }
 
-function AddGroupsButton() {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate("/add-group");
-  };
-
+function AddGroupsButton({ onClick }) {
   return (
     <button
       type="button"
-      onClick={handleClick}
-      className="w-1/2 bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 py-2 px-4"
+      onClick={onClick}
+      className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 relative group"
     >
-      Add a group
+      <i className="fa-solid fa-plus"></i>
+      <div className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
+        Add Group
+      </div>
     </button>
   );
 }
 
+function JoinPrivateGroupButton() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleClick = () => {
+    setIsModalOpen(true);
+  };
+
+  return (
+    <>
+      <div className="relative group">
+        <span className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
+          Join Private Group
+        </span>
+        <button
+          type="button"
+          onClick={handleClick}
+          className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 flex items-center justify-center"
+        >
+          <i className="fa-solid fa-circle-up"></i>
+        </button>
+      </div>
+
+      {isModalOpen && (
+        <JoinPrivateGroupModal closeModal={() => setIsModalOpen(false)} />
+      )}
+    </>
+  );
+}
+
 function Groups() {
+  const [showAddGroupModal, setShowAddGroupModal] = useState(false);
+
   return (
     <div className="bg-fuchsia-100 pt-1">
       <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-[20px] md:grid-cols-[repeat(3,294px)] gap-y-5 md:gap-x-[20px] justify-center px-4">
@@ -108,11 +152,18 @@ function Groups() {
           <h1 className="text-2xl font-sans font-bold mb-[10px]">
             Popular Groups
           </h1>
-          <AddGroupsButton />
+          <div className="flex gap-2 justify-end-safe">
+            <AddGroupsButton onClick={() => setShowAddGroupModal(true)} />
+            <JoinPrivateGroupButton />
+          </div>
         </div>
 
         <GroupsCards />
       </div>
+
+      {showAddGroupModal && (
+        <AddGroups closeModal={() => setShowAddGroupModal(false)} />
+      )}
     </div>
   );
 }
