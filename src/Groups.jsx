@@ -7,6 +7,7 @@ import { useUser } from "./AuthContext";
 import AddGroups from "./AddGroups";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import JoinPrivateGroupModal from "./JoinPrivateGroups";
 
 function GroupsCards() {
   const [publicGroups, setPublicGroups] = useState([]);
@@ -113,23 +114,31 @@ function AddGroupsButton({ onClick }) {
 }
 
 function JoinPrivateGroupButton() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleClick = () => {
-    alert("Feature coming soon!"); // You can later replace this with a modal or redirect
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="relative group">
-      <span className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
+    <>
+      <div className="relative group">
+        <span className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
           Join Private Group
-      </span>
-      <button
-        type="button"
-        onClick={handleClick}
-        className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 flex items-center justify-center"
-      >
-        <i className="fa-solid fa-circle-up"></i>
-      </button>
-    </div>
+        </span>
+        <button
+          type="button"
+          onClick={handleClick}
+          className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 flex items-center justify-center"
+        >
+          <i className="fa-solid fa-circle-up"></i>
+        </button>
+      </div>
+
+      {isModalOpen && (
+        <JoinPrivateGroupModal closeModal={() => setIsModalOpen(false)} />
+      )}
+    </>
   );
 }
 

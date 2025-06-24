@@ -6,6 +6,9 @@ import {
   query,
   where,
   getDocs,
+  doc,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { useUser } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +55,14 @@ function AddGroups({ closeModal }) {
 
       if (!isPublic) groupData.allowedMembers = allowedMembers;
 
-      await addDoc(collection(db, "Group"), groupData);
+      
+      const groupRef = await addDoc(collection(db, "Group"), groupData);
+
+      
+      const userRef = doc(db, "User", user.uid);
+      await updateDoc(userRef, {
+        groupIds: arrayUnion(groupRef.id),
+      });
 
       alert("Group and chat created successfully!");
       navigate("/", { state: { autoOpenChatId: chatId } });
