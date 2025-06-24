@@ -25,6 +25,7 @@ function AddGroups({ closeModal }) {
   const [isPublic, setIsPublic] = useState(true);
   const [emailQuery, setEmailQuery] = useState("");
   const [allowedMembers, setAllowedMembers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const { user } = useUser();
 
@@ -37,6 +38,11 @@ function AddGroups({ closeModal }) {
       alert("Please select a group icon.");
       return;
     }
+
+    if (loading) return; // Prevent multiple submits
+
+  setLoading(true); // Show loading state
+
 
     try {
       const chatRef = await addDoc(collection(db, "Chat"), {});
@@ -69,6 +75,8 @@ function AddGroups({ closeModal }) {
     } catch (error) {
       console.error("Error creating group and chat:", error);
       alert("Failed to add group. Please try again.");
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -200,9 +208,10 @@ function AddGroups({ closeModal }) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-fuchsia-800 text-white rounded hover:bg-fuchsia-900"
+              className="px-4 py-2 bg-fuchsia-800 text-white rounded hover:bg-fuchsia-900 disabled:opacity-50"
+              disabled={loading}
             >
-              Submit
+              {loading ? "Creating...": "Create"}
             </button>
           </div>
         </form>
