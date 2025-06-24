@@ -13,8 +13,9 @@ import {
 import { db, auth } from "../firebase-config";
 import { onAuthStateChanged } from "firebase/auth";
 import "../ChatRoom.css";
+import { useUser } from "../AuthContext";
 
-function ChatRoom2({ chatId }) {
+function ChatRoom2({ chatId, chatName, chatIcon }) {
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -29,6 +30,7 @@ function ChatRoom2({ chatId }) {
   const [msgId, setMsgId] = useState(null);
 
   const messagesEndRef = useRef(null);
+  const user2 = useUser();
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, setUser);
@@ -179,13 +181,16 @@ function ChatRoom2({ chatId }) {
         </div>
       ) : (
         <>
-          <h2 className="chat-title">Chat Room (Chat ID: {chatId})</h2>
+          <div className="chat-title-c">
+            <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>
+            <h2 className="chat-title">{chatName}</h2>
+          </div>
           <div className="chat-messages">
             {messages.map((msg) => (
               <div key={msg.id} className={`chat-message-wrapper`}>
                 <div
                   className={`chat-message ${msg.pinned ? "pinned" : ""} ${
-                    msg.uid === user?.uid ? "own-message" : ""
+                    msg.uid === user2?.uid ? "own-message" : ""
                   }`}
                 >
                   <p className="message-sender">{msg.name}</p>
@@ -338,11 +343,19 @@ function ChatRoom2({ chatId }) {
                   }}
                 />
               ))}
-              <button onClick={() => setPollOptions([...pollOptions, ""])}>
+              <button
+                className="add-option"
+                onClick={() => setPollOptions([...pollOptions, ""])}
+              >
                 Add Option
               </button>
-              <div>
-                <button onClick={() => setShowPollForm(false)}>× Close</button>
+              <div className="poll-action-buttons">
+                <button
+                  className="close"
+                  onClick={() => setShowPollForm(false)}
+                >
+                  Close
+                </button>
                 <button onClick={createPoll}>Submit Poll</button>
               </div>
             </div>
@@ -370,7 +383,7 @@ function ChatRoom2({ chatId }) {
                     setShowDropdown(false);
                   }}
                 >
-                  📊 Poll
+                  <i class="fa-solid fa-square-poll-horizontal"></i> Poll
                 </button>
               </div>
             )}
@@ -386,7 +399,7 @@ function ChatRoom2({ chatId }) {
               type="submit"
               disabled={!text.trim()}
             >
-              Send
+              <i class="fa-solid fa-paper-plane"></i>
             </button>
           </form>
         </>
