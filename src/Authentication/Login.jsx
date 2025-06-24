@@ -1,8 +1,9 @@
 import { handleGoogleSignup } from "./AuthFunctions";
 function LoginForm() {
   return (
-  <div className="min-h-screen  py-5  bg-purple-600 flex flex-col items-center justify-center ">
-      <div className=" bg-white  p-5 rounded-2xl h-full flex flex-col items-center justify-center">
+  <div className="min-h-screen  py-5 flex flex-col items-center justify-center" >
+    <img src="/Images/Login-page/Loginbg.png" alt="Background image" className="absolute w-full h-full object-fill" />
+      <div className=" bg-white  p-5 rounded-2xl h-full flex flex-col items-center justify-center z-10">
         <div className="w-2/3">
           <h2 className="text-3xl font-semibold text-center mb-4">
             lets start learning

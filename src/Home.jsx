@@ -155,7 +155,7 @@ function Home() {
         </div>
       ) : (
         <ul id="grp-container">
-          <h2 id="main-title">Conversations</h2>
+          <h3 id="main-title">Groups</h3>
           {groups.map((group) => (
             <div
               key={group.id}

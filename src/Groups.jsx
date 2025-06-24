@@ -1,7 +1,6 @@
-// src/components/Groups.jsx
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase-config"; // ✅ Adjust path if needed
+import { db } from "./firebase-config";
 import { joinPublic } from "./JoinGroups";
 import { useUser } from "./AuthContext";
 import AddGroups from "./AddGroups";
@@ -14,18 +13,24 @@ function GroupsCards() {
   const [showAddGroupModal, setShowAddGroupModal] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
+  const [joining, setJoining] = useState(false);
   const handleJoin = async (groupId) => {
-  try {
-    await joinPublic(user, groupId); // ✅ Join logic
 
-    // 🔁 Get chatId from the group so we can open it in Home
+    if (joining) return; // Prevent multiple submits
+
+  setJoining(true); // Show loading state
+
+  try {
+    await joinPublic(user, groupId);
+
     const groupDoc = await getDoc(doc(db, "Group", groupId));
     const chatId = groupDoc.exists() ? groupDoc.data().chatId : null;
 
-    // ✅ Redirect to home and auto-open the chat if available
     navigate("/", { state: { autoOpenChatId: chatId } });
   } catch (err) {
     console.error("Error joining and redirecting:", err);
+  }finally{
+    setJoining(false)
   }
 };
 
@@ -79,12 +84,13 @@ function GroupsCards() {
           </div>
           <div className="w-full flex justify-between mt-4 px-1">
             <button
-              className="font-[14px] text-white bg-fuchsia-800 px-3 py-1 rounded shadow-sm cursor-pointer hover:bg-fuchsia-900"
+              className="font-[14px] text-white bg-fuchsia-800 px-3 py-1 rounded shadow-sm cursor-pointer hover:bg-fuchsia-900 disabled:opacity-50"
               onClick={() => {
                 handleJoin(group.id);
               }}
+              disabled={joining}
             >
-              Join
+              {joining ? "...": "Join"}
             </button>
             {console.log(group)}
 
@@ -107,7 +113,7 @@ function AddGroupsButton({ onClick }) {
     >
       <i className="fa-solid fa-plus"></i>
       <div className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
-        Add Group
+        Create a Group
       </div>
     </button>
   );
@@ -124,7 +130,7 @@ function JoinPrivateGroupButton() {
     <>
       <div className="relative group">
         <span className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
-          Join Private Group
+          Join a Private Group
         </span>
         <button
           type="button"
