@@ -5,14 +5,28 @@ import { db } from "./firebase-config"; // ✅ Adjust path if needed
 import { joinPublic } from "./JoinGroups";
 import { useUser } from "./AuthContext";
 import AddGroups from "./AddGroups";
+import { doc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 function GroupsCards() {
   const [publicGroups, setPublicGroups] = useState([]);
   const [showAddGroupModal, setShowAddGroupModal] = useState(false);
   const { user } = useUser();
+  const navigate = useNavigate();
   const handleJoin = async (groupId) => {
-    await joinPublic(user, groupId); // pass user here
-  };
+  try {
+    await joinPublic(user, groupId); // ✅ Join logic
+
+    // 🔁 Get chatId from the group so we can open it in Home
+    const groupDoc = await getDoc(doc(db, "Group", groupId));
+    const chatId = groupDoc.exists() ? groupDoc.data().chatId : null;
+
+    // ✅ Redirect to home and auto-open the chat if available
+    navigate("/", { state: { autoOpenChatId: chatId } });
+  } catch (err) {
+    console.error("Error joining and redirecting:", err);
+  }
+};
 
   useEffect(() => {
     const fetchGroups = async () => {

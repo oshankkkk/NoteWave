@@ -8,6 +8,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { useUser } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const iconOptions = [
   "Icon1.png", "Icon2.png", "Icon3.png", "Icon4.png",
@@ -23,6 +24,8 @@ function AddGroups({ closeModal }) {
   const [allowedMembers, setAllowedMembers] = useState([]);
 
   const { user } = useUser();
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,10 +55,7 @@ function AddGroups({ closeModal }) {
       await addDoc(collection(db, "Group"), groupData);
 
       alert("Group and chat created successfully!");
-      // Reset state
-      setSelectedIcon(""); setGroupName(""); setDescription("");
-      setIsPublic(true); setAllowedMembers([]); setEmailQuery("");
-      closeModal(); // 🔒 Close modal on success
+      navigate("/", { state: { autoOpenChatId: chatId } });
     } catch (error) {
       console.error("Error creating group and chat:", error);
       alert("Failed to add group. Please try again.");
