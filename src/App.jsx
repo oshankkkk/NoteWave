@@ -11,6 +11,7 @@ import SignUpPage from "./Authentication/SignUpPage.jsx";
 import LoginPage from "./Authentication/LoginPage.jsx";
 import Groups from "./Groups.jsx";
 import { AuthProvider } from "./AuthContext.jsx"; // ✅ make sure this file exists and is exported
+import { Calendar } from "./calendar.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -38,6 +39,7 @@ function App() {
           >
             <Route index element={<Home />} />
             <Route path="groups" element={<Groups />} />
+            <Route path="calendar" element={<Calendar />} />
           </Route>
 
           {/* Public routes */}

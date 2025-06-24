@@ -6,6 +6,7 @@ import {
   signInWithPopup,
   signOut,
   updateProfile,
+  GoogleAuthProvider
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -68,7 +69,9 @@ export async function handleGoogleSignup() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
-
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const accessToken = credential.accessToken;
+    localStorage.setItem('calendarAccessToken', accessToken);
     // Save user data if new user (or just overwrite)
     await saveUserToFirestore(user);
     console.log("Google signup/login successful:", user.uid);
@@ -92,5 +95,5 @@ export async function handleLogout() {
     console.log("Logged out");
   } catch (err) {
     console.error("Logout error:", err.message);
-  }
+  }
 }
