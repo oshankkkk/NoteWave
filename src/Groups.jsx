@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase-config"; // ✅ Adjust path if needed
-import { useNavigate } from "react-router-dom";
 import { joinPublic } from "./JoinGroups";
 import { useUser } from "./AuthContext";
+import AddGroups from "./AddGroups";
 
 function GroupsCards() {
   const [publicGroups, setPublicGroups] = useState([]);
+  const [showAddGroupModal, setShowAddGroupModal] = useState(false);
   const { user } = useUser();
   const handleJoin = async (groupId) => {
     await joinPublic(user, groupId); // pass user here
@@ -82,27 +83,18 @@ function GroupsCards() {
   );
 }
 
-function AddGroupsButton() {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate("/add-group");
-  };
-
+function AddGroupsButton({ onClick }) {
   return (
-    <div className="relative group">
-      <span className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 relative group"
+    >
+      <i className="fa-solid fa-plus"></i>
+      <div className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
         Add Group
-      </span>
-      
-      <button
-        type="button"
-        onClick={handleClick}
-        className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 flex items-center justify-center"
-      >
-        <i className="fa-solid fa-plus"></i>
-      </button>
-    </div>
+      </div>
+    </button>
   );
 }
 
@@ -128,19 +120,27 @@ function JoinPrivateGroupButton() {
 }
 
 function Groups() {
+  const [showAddGroupModal, setShowAddGroupModal] = useState(false);
+
   return (
     <div className="bg-fuchsia-100 pt-1">
       <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-[20px] md:grid-cols-[repeat(3,294px)] gap-y-5 md:gap-x-[20px] justify-center px-4">
-        <div className="flex items-center justify-between col-span-3 mb-[10px]">
-          <h1 className="text-2xl font-sans font-bold">Popular Groups</h1>
-          <div className="flex space-x-3">
-            <AddGroupsButton />
+        <div className="grid grid-cols-2 justify-between col-span-3">
+          <h1 className="text-2xl font-sans font-bold mb-[10px]">
+            Popular Groups
+          </h1>
+          <div className="flex gap-2 justify-end-safe">
+            <AddGroupsButton onClick={() => setShowAddGroupModal(true)} />
             <JoinPrivateGroupButton />
           </div>
         </div>
 
         <GroupsCards />
       </div>
+
+      {showAddGroupModal && (
+        <AddGroups closeModal={() => setShowAddGroupModal(false)} />
+      )}
     </div>
   );
 }
