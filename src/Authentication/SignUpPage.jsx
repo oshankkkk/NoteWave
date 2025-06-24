@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { handleGoogleSignup } from "./AuthFunctions";
 
+import { useNavigate } from "react-router-dom"; // ✅ import this
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // ✅ hook for navigation
 
   const handleGoogleSignupWithValidation = () => {
     if (!username.trim()) {
@@ -73,9 +75,14 @@ export default function SignUpPage() {
               <a
                 href="#"
                 className="text-purple-600 font-medium transition-colors duration-200"
+   onClick={() =>  // ✅ use navigate here
+                navigate("/login")}
+
+
               >
                 Login
               </a>
+
             </p>
           </div>
 
