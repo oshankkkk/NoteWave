@@ -1,8 +1,12 @@
-// src/components/AddGroups.jsx
 import React, { useState } from "react";
 import { db } from "./firebase-config";
-import { collection, addDoc } from "firebase/firestore";
-
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { useUser } from "./AuthContext";
 
 const iconOptions = [
@@ -21,6 +25,8 @@ function AddGroups() {
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+  const [emailQuery, setEmailQuery] = useState("");
+  const [allowedMembers, setAllowedMembers] = useState([]);
 
   const { user } = useUser();
 
@@ -33,13 +39,11 @@ function AddGroups() {
     }
 
     try {
-      const chatRef = await addDoc(collection(db, "Chat"), {
-        messages: [],
-      });
+      const chatRef = await addDoc(collection(db, "Chat"), {});
 
       const chatId = chatRef.id;
 
-      await addDoc(collection(db, "Group"), {
+      const groupData = {
         Admin: user.uid,
         Icon: selectedIcon,
         Member: { [user.uid]: true },
@@ -48,13 +52,21 @@ function AddGroups() {
         Public: isPublic,
         unreadCnt: {},
         chatId: chatId,
-      });
+      };
+
+      if (!isPublic) {
+        groupData.allowedMembers = allowedMembers;
+      }
+
+      await addDoc(collection(db, "Group"), groupData);
 
       alert("Group and chat created successfully!");
       setSelectedIcon("");
       setGroupName("");
       setDescription("");
       setIsPublic(true);
+      setAllowedMembers([]);
+      setEmailQuery("");
     } catch (error) {
       console.error("Error creating group and chat:", error);
       alert("Failed to add group. Please try again.");
@@ -69,7 +81,7 @@ function AddGroups() {
       {/* Icon Selection */}
       <label className="block mb-4">
         <span className="block mb-2 font-semibold">Select a Group Icon</span>
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-4 gap-2">
           {iconOptions.map((icon, idx) => (
             <img
               key={idx}
@@ -124,6 +136,64 @@ function AddGroups() {
           <option value="false">Private</option>
         </select>
       </label>
+
+      {/* Add Members by Email (only for Private groups) */}
+      {!isPublic && (
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">Add Member by Email</label>
+          <div className="flex space-x-2">
+            <input
+              type="email"
+              placeholder="Enter full email address"
+              value={emailQuery}
+              onChange={(e) => setEmailQuery(e.target.value)}
+              className="flex-1 p-2 border rounded"
+            />
+            <button
+              type="button"
+              onClick={async () => {
+                if (!emailQuery) return;
+
+                try {
+                  const q = query(
+                    collection(db, "User"),
+                    where("email", "==", emailQuery)
+                  );
+                  const querySnapshot = await getDocs(q);
+                  if (!querySnapshot.empty) {
+                    if (!allowedMembers.includes(emailQuery)) {
+                      setAllowedMembers((prev) => [...prev, emailQuery]);
+                      setEmailQuery("");
+                    } else {
+                      alert("This user is already added.");
+                    }
+                  } else {
+                    alert("No user found with that email.");
+                  }
+                } catch (error) {
+                  console.error("Error checking email:", error);
+                  alert("An error occurred. Please try again.");
+                }
+              }}
+              className="bg-fuchsia-700 text-white px-3 py-1 rounded hover:bg-fuchsia-800"
+            >
+              Add
+            </button>
+          </div>
+
+          {/* Display allowed members */}
+          {allowedMembers.length > 0 && (
+            <div className="mt-2 text-sm text-gray-800">
+              <strong>Allowed Members:</strong>
+              <ul className="list-disc list-inside">
+                {allowedMembers.map((email, idx) => (
+                  <li key={idx}>{email}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Submit Button */}
       <button

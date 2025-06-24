@@ -90,13 +90,40 @@ function AddGroupsButton() {
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className="w-1/2 bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 py-2 px-4"
-    >
-      Add a group
-    </button>
+    <div className="relative group">
+      <span className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
+        Add Group
+      </span>
+      
+      <button
+        type="button"
+        onClick={handleClick}
+        className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 flex items-center justify-center"
+      >
+        <i className="fa-solid fa-plus"></i>
+      </button>
+    </div>
+  );
+}
+
+function JoinPrivateGroupButton() {
+  const handleClick = () => {
+    alert("Feature coming soon!"); // You can later replace this with a modal or redirect
+  };
+
+  return (
+    <div className="relative group">
+      <span className="absolute top-[115%] left-1/2 -translate-x-1/2 bg-fuchsia-800 text-white text-[14px] font-medium px-2 py-[6px] rounded-md shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-in-out whitespace-nowrap z-20">
+          Join Private Group
+      </span>
+      <button
+        type="button"
+        onClick={handleClick}
+        className="w-[42px] h-[42px] bg-fuchsia-800 text-white rounded cursor-pointer hover:bg-fuchsia-900 flex items-center justify-center"
+      >
+        <i className="fa-solid fa-circle-up"></i>
+      </button>
+    </div>
   );
 }
 
@@ -104,11 +131,12 @@ function Groups() {
   return (
     <div className="bg-fuchsia-100 pt-1">
       <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-[20px] md:grid-cols-[repeat(3,294px)] gap-y-5 md:gap-x-[20px] justify-center px-4">
-        <div className="grid grid-cols-2 justify-between col-span-3">
-          <h1 className="text-2xl font-sans font-bold mb-[10px]">
-            Popular Groups
-          </h1>
-          <AddGroupsButton />
+        <div className="flex items-center justify-between col-span-3 mb-[10px]">
+          <h1 className="text-2xl font-sans font-bold">Popular Groups</h1>
+          <div className="flex space-x-3">
+            <AddGroupsButton />
+            <JoinPrivateGroupButton />
+          </div>
         </div>
 
         <GroupsCards />

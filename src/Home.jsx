@@ -158,7 +158,7 @@ function Home() {
             >
               <img
                 className="grp-icon"
-                src="/Images/spare-avatar.png"
+                src={`/Images/publicGroupIcons/${group.Icon}`}
                 alt="Group icon"
               />
               <span>{group.Name}</span>
