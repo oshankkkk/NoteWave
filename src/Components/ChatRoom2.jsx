@@ -14,6 +14,7 @@ import { db, auth } from "../firebase-config";
 import { onAuthStateChanged } from "firebase/auth";
 import "../ChatRoom.css";
 import { useUser } from "../AuthContext";
+import { AddMeetingForm } from "../calendar";
 
 function ChatRoom2({ chatId, chatName, chatIcon }) {
   const [user, setUser] = useState(null);
@@ -28,10 +29,10 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
   const [msgId, setMsgId] = useState(null);
-
+  const [isMeeting, setMeeting] = useState(false);
   const messagesEndRef = useRef(null);
   const user2 = useUser();
-
+  const [showMeetingForm, setShowMeetingForm] = useState(false);
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, setUser);
     return () => unsubscribeAuth();
@@ -171,6 +172,13 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
     }
 
     await updateDoc(msgRef, { votes: updatedVotes, options: updatedOptions });
+  };
+
+  const showMeeting = () => {
+    //setMeeting(!isMeeting);
+    //if (isMeeting) {
+    return AddMeetingForm;
+    //}
   };
 
   return (
@@ -385,6 +393,21 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
                 >
                   <i class="fa-solid fa-square-poll-horizontal"></i> Poll
                 </button>
+                <button
+                  className="meeting-btn"
+                  onClick={() => setShowMeetingForm(true)}
+
+                >
+                <i className="fa-solid fa-video"></i> Meeting
+            </button>
+            {showMeetingForm && (
+              <AddMeetingForm
+                  onClose={() => setShowMeetingForm(false)}
+                  onSubmit={(meetingData) => createGoogleMeetEvent(meetingData)}
+              />
+                )}
+
+            {" "}
               </div>
             )}
             <input
