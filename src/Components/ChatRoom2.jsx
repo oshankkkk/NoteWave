@@ -15,8 +15,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import "../ChatRoom.css";
 import { useUser } from "../AuthContext";
 import { AddMeetingForm } from "../calendar";
+import GroupSideBar from "../GroupSideBar/GroupSideBar";
 
-function ChatRoom2({ chatId, chatName, chatIcon }) {
+function ChatRoom2({groupData, chatId, chatName, chatIcon }) {
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -157,7 +158,7 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
   const handleVote = async (messageId, optionIndex) => {
     const msgRef = doc(db, "Chat", chatId, "messages", messageId);
     const snap = await getDoc(msgRef);
-    if (!snap.exists()) return;
+if (!snap.exists()) return;
 
     const data = snap.data();
     const prevVote = data.votes?.[user.uid];
@@ -180,8 +181,8 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
     return AddMeetingForm;
     //}
   };
-
   return (
+    <>
     <div className="chat-container">
       {!chatId ? (
         <div className="no-chat-selected">
@@ -427,7 +428,11 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
           </form>
         </>
       )}
+{console.log(groupData)}
+    <GroupSideBar groupData={groupData} ></GroupSideBar>
     </div>
+
+    </>
   );
 }
 
