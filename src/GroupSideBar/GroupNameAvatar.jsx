@@ -1,15 +1,68 @@
-import { useState } from "react"
-export default function GroupNameAndAvatar({groupData,adminId,name}){
+import { db } from "../firebase-config";
+import { useEffect,useState } from "react";
+import { doc,updateDoc, getDoc } from "firebase/firestore";
+
+export default function GroupNameAndAvatar({groupMembers,adminId,name,groupId}){
 const [isEditingName, setIsEditingName] = useState(false);
-const [groupName, setGroupName] = useState(name);
-   const handleNameSubmit = (e) => {
-    if (e.key === 'Enter') {
-      setIsEditingName(false);
+const [groupName, setGroupName] = useState(null);
+   
+  const handleNameSubmit = async (e) => {
+  if (e.key === 'Enter') {
+    setIsEditingName(false);
+
+    try {
+      const groupRef = doc(db, "Group", groupId); // you need the groupId
+      await updateDoc(groupRef, {
+        Name: groupName,
+      });
+      console.log("Group name updated");
+    } catch (error) {
+      console.error("Error updating group name:", error);
     }
-  };
+  }
+};
+
   const handleNameEdit = () => {
     setIsEditingName(!isEditingName);
   };
+const[AdminName,setAdminName]=useState("")
+  useEffect(() => {
+    //   if (!user) return;
+    const fetchUser = async () => {
+      const userRef = doc(db, "User", adminId);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        console.log("fff")
+        console.log(data);
+        console.log("HHH")
+        setAdminName(data.name)
+        // setUserData(data); // or whatever you want to do
+      } else {
+        console.log("No such user");
+      }
+    };
+
+    fetchUser();
+  }, []);
+useEffect(() => {
+  const fetchGroup = async () => {
+    const groupRef = doc(db, "Group", groupId);
+    const groupSnap = await getDoc(groupRef);
+
+    if (groupSnap.exists()) {
+      const data = groupSnap.data();
+      setGroupName(data.Name || ""); // ✅ fetch fresh name
+    } else {
+      console.log("No such group");
+    }
+  };
+
+  fetchGroup();
+}, [groupId]);
+
+
     return(
         <div className="p-6 border-b bg-amber-50 border-gray-200">
           <div className="flex flex-col items-center">
@@ -48,12 +101,11 @@ const [groupName, setGroupName] = useState(name);
             <div className="text-sm text-gray-500 mt-2 text-center">
               <p className="flex items-center justify-center">
                 <span className="text-sm mr-1">👥</span>
-                {/* {groupMembers.length}w members */}
-                6
+                {Object.keys(groupMembers).length} members
               </p>
               <p className="mt-1">
                 {/* Created by {groupMembers.find(m => m.isCreator)?.name}, 12/15/2023 */}
-              {adminId}
+              Created by {AdminName}
               </p>
             </div>
           </div>
