@@ -25,7 +25,7 @@ function Home() {
   const [grpName, setName] = useState(null);
   const [grpIcon, setIcon] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
-const[groupData,setGroupData]=useState(null)
+  const[groupData,setGroupData]=useState(null)
   // Track auth state to get user
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -99,6 +99,8 @@ const[groupData,setGroupData]=useState(null)
 
           if (isMounted) {
             setGroups(Object.values(allGroupsMap));
+            console.log(allGroupsMap)
+            console.log("hhhhh")
             setLoading(false);
           }
         });
@@ -123,7 +125,7 @@ const[groupData,setGroupData]=useState(null)
       });
 
       console.log("Unread count reset to 0");
-setGroupData(group)
+  setGroupData(group)
       setGrp(chatID);
       setName(groupName);
       setIcon(groupIcon);
@@ -187,10 +189,11 @@ setGroupData(group)
       )}
       {grp && (
         <ChatRoom2
-groupData={groupData}
+          groupData={groupData}
           chatId={grp}
           chatName={grpName}
           chatIcon={grpIcon}
+          userId={user.uid}
         ></ChatRoom2>
       )}
     </div>
