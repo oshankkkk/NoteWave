@@ -17,7 +17,8 @@ import { useUser } from "../AuthContext";
 import { AddMeetingForm } from "../calendar";
 import GroupSideBar from "../GroupSideBar/GroupSideBar";
 
-function ChatRoom2({groupData, chatId, chatName, chatIcon }) {
+function ChatRoom2({groupData, chatId, chatName, chatIcon,userId }) {
+  const [activeSideBar,setActiveSideBar]=useState(true)
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -191,6 +192,10 @@ if (!snap.exists()) return;
       ) : (
         <>
           <div className="chat-title-c">
+{/* this button wont work for somereason */}
+            {/* <button className="bg-yellow-300" onClick={()=>{setActiveSideBar(true)}} >
+              click me
+            </button> */}
             <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>
             <h2 className="chat-title">{chatName}</h2>
           </div>
@@ -428,8 +433,12 @@ if (!snap.exists()) return;
           </form>
         </>
       )}
-{console.log(groupData)}
-    <GroupSideBar groupData={groupData} ></GroupSideBar>
+
+    <GroupSideBar groupData={groupData} userId={userId} setActiveSideBar={setActiveSideBar}></GroupSideBar>
+{/* {activeSideBar==true &&
+
+    <GroupSideBar groupData={groupData} userId={userId} setActiveSideBar={setActiveSideBar}></GroupSideBar>
+} */}
     </div>
 
     </>
