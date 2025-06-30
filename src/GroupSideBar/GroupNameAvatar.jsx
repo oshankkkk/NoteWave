@@ -71,7 +71,7 @@ useEffect(() => {
               <div className="w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center text-4xl">
                 👥
               </div>
-              <button className="absolute bottom-2 right-2 bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
+              <button className="absolute bottom-2 right-2 bg-purple-600 text-white p-2 rounded-full hover:bg-purple-500">
                 <span className="text-white text-lg">📷</span>
               </button>
             </div>
@@ -85,7 +85,7 @@ useEffect(() => {
                   onChange={(e) => setGroupName(e.target.value)}
                   onKeyPress={handleNameSubmit}
                   onBlur={() => setIsEditingName(false)}
-                  className="text-xl font-semibold text-center w-full border-b-2 border-green-600 outline-none bg-transparent"
+                  className="text-xl font-semibold text-center w-full border-b-2 border-purple-600 outline-none bg-transparent"
                   autoFocus
                 />
               ) : (

@@ -11,7 +11,7 @@ export default function GroupDescription({ description, groupId }) {
     if (e.key === "Enter") {
       setIsEditingDescription(false);
 try {
-      const groupRef = doc(db, "Group", groupId); // you need the groupId
+      const groupRef = doc(db, "Group", groupId); 
       await updateDoc(groupRef, {
         Description:groupDescription,
       });
@@ -28,7 +28,7 @@ useEffect(() => {
 
     if (groupSnap.exists()) {
       const data = groupSnap.data();
-      setGroupDescription(data.Description|| "h"); // ✅ fetch fresh name
+      setGroupDescription(data.Description|| " "); 
     } else {
       console.log("No such group");
     }
@@ -55,7 +55,7 @@ useEffect(() => {
           onChange={(e) => setGroupDescription(e.target.value)}
           onKeyPress={handleDescriptionSubmit}
           onBlur={() => setIsEditingDescription(false)}
-          className="w-full text-sm text-gray-600 border border-gray-300 rounded p-2 outline-none focus:border-green-600 resize-none"
+          className="w-full text-sm text-gray-600 border border-gray-300 rounded p-2 outline-none focus:border-purple-600 resize-none"
           rows="3"
           autoFocus
         />
