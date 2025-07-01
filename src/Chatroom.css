@@ -98,7 +98,7 @@
 
 .message-timestamp {
   font-size: 8.5px;
-  color: #fff5;
+  color: rgba(40, 39, 39, 0.333);
   position: absolute;
   bottom: 7px;
   right: 12px;

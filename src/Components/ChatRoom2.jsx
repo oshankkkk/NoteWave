@@ -16,7 +16,7 @@ import "../ChatRoom.css";
 import { useUser } from "../AuthContext";
 import { AddMeetingForm } from "../calendar";
 
-function ChatRoom2({ chatId, chatName, chatIcon }) {
+function ChatRoom2({ chatId, chatName, chatIcon,groupId }) {
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -192,6 +192,7 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
           <div className="chat-title-c">
             <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>
             <h2 className="chat-title">{chatName}</h2>
+            <h2 className="chat-title">{groupId}</h2>
           </div>
           <div className="chat-messages">
             {messages.map((msg) => (
