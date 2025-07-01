@@ -25,7 +25,7 @@ function Home() {
   const [grpName, setName] = useState(null);
   const [grpIcon, setIcon] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
-
+  const[groupData,setGroupData]=useState(null)
   // Track auth state to get user
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -99,6 +99,8 @@ function Home() {
 
           if (isMounted) {
             setGroups(Object.values(allGroupsMap));
+            console.log(allGroupsMap)
+            console.log("hhhhh")
             setLoading(false);
           }
         });
@@ -114,7 +116,7 @@ function Home() {
     };
   }, [user]);
 
-  const loadChat = async (chatID, groupId, groupName, groupIcon) => {
+  const loadChat = async (chatID, groupId, groupName, groupIcon,group) => {
     if (!user) return;
     const groupRef = doc(db, "Group", groupId);
     try {
@@ -123,6 +125,7 @@ function Home() {
       });
 
       console.log("Unread count reset to 0");
+  setGroupData(group)
       setGrp(chatID);
       setName(groupName);
       setIcon(groupIcon);
@@ -154,7 +157,7 @@ function Home() {
           <p>You haven't joined any grp so far</p>
         </div>
       ) : (
-        <ul id="grp-container">
+        <ul id="grp-container ">
           <h3 id="main-title">Groups</h3>
           {groups.map((group) => (
             <div
@@ -163,7 +166,7 @@ function Home() {
                 selectedGroupId === group.id ? "selected" : ""
               }`}
               onClick={() =>
-                loadChat(group.chatId, group.id, group.Name, group.Icon)
+                loadChat(group.chatId, group.id, group.Name, group.Icon,group)
               }
             >
               <img
@@ -186,10 +189,11 @@ function Home() {
       )}
       {grp && (
         <ChatRoom2
+          groupData={groupData}
           chatId={grp}
           chatName={grpName}
           chatIcon={grpIcon}
-          groupId={selectedGroupId} 
+          userId={user.uid}
         ></ChatRoom2>
       )}
     </div>
