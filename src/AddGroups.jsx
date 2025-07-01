@@ -26,7 +26,7 @@ function AddGroups({ closeModal }) {
   const [emailQuery, setEmailQuery] = useState("");
   const [allowedMembers, setAllowedMembers] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  
   const { user } = useUser();
 
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ function AddGroups({ closeModal }) {
       const chatId = chatRef.id;
 
       const groupData = {
-        Admin: user.uid,
+        Admin: [user.uid],
         Icon: selectedIcon,
         Member: { [user.uid]: true },
         Name: groupName,

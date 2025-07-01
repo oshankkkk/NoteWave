@@ -33,6 +33,9 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
   const messagesEndRef = useRef(null);
   const user2 = useUser();
   const [showMeetingForm, setShowMeetingForm] = useState(false);
+  const [adminUids, setAdminUids] = useState([]);
+  const isAdmin = user?.uid && adminUids.includes(String(user.uid));
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, setUser);
     return () => unsubscribeAuth();
@@ -51,13 +54,37 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  // Fetch admin UIDs
+  useEffect(() => {
+    if (!chatId) return;
+
+    const fetchAdmins = async () => {
+      console.log("📢 fetchAdmins called for chatId:", chatId); // <-- ADD THIS
+      const groupRef = doc(db, "Group", chatId);
+      const groupSnap = await getDoc(groupRef);
+      if (groupSnap.exists()) {
+        const groupData = groupSnap.data();
+        setAdminUids(groupData.Admin || []);
+
+        // 🧪 Debug logs here
+        console.log("Fetched Admin UIDs:", groupData.Admin);
+        console.log("Logged-in UID:", auth.currentUser?.uid);
+        console.log(
+          "Is Admin:",
+          groupData.Admin?.includes(String(auth.currentUser?.uid))
+        );
+      }
+    };
+
+    fetchAdmins();
+  }, [chatId]);
+
+
+  // Listen for chat messages
   useEffect(() => {
     if (!chatId) return setMessages([]);
 
-    const q = query(
-      collection(db, "Chat", chatId, "messages"),
-      orderBy("time")
-    );
+    const q = query(collection(db, "Chat", chatId, "messages"), orderBy("time"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const msgs = querySnapshot.docs.map((doc) => {
         const data = doc.data();
@@ -99,10 +126,10 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
         type: "text",
         replyTo: replyTo
           ? {
-              id: replyTo.id,
-              text: replyTo.text || replyTo.question,
-              sender: replyTo.name,
-            }
+            id: replyTo.id,
+            text: replyTo.text || replyTo.question,
+            sender: replyTo.name,
+          }
           : null,
       });
       setText("");
@@ -175,10 +202,7 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
   };
 
   const showMeeting = () => {
-    //setMeeting(!isMeeting);
-    //if (isMeeting) {
     return AddMeetingForm;
-    //}
   };
 
   return (
@@ -190,16 +214,77 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
       ) : (
         <>
           <div className="chat-title-c">
-            <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>
+            <img src={`/Images/publicGroupIcons/${chatIcon}`} alt="Chat Icon" />
             <h2 className="chat-title">{chatName}</h2>
           </div>
           <div className="chat-messages">
             {messages.map((msg) => (
-              <div key={msg.id} className={`chat-message-wrapper`}>
-                <div
-                  className={`chat-message ${msg.pinned ? "pinned" : ""} ${
-                    msg.uid === user2?.uid ? "own-message" : ""
+              <div
+                key={msg.id}
+                className={`chat-message-wrapper ${msg.uid === user?.uid ? "right" : "left"
                   }`}
+              >
+                {/* Dots button LEFT for own (right-aligned) messages */}
+                {(msg.uid === user?.uid || isAdmin) && (
+                  <div
+                    className={`message-actions ${msg.uid === user?.uid ? "left-side-actions" : ""
+                      }`}
+                  >
+                    <button
+                      className="dots-button"
+                      onClick={(e) => {
+                        setMsgId(msg.id);
+                        e.stopPropagation();
+                        setOpenActionMenuId(openActionMenuId === msg.id ? null : msg.id);
+                      }}
+                      aria-label="Message options"
+                    >
+                      ⋮
+                    </button>
+                    {openActionMenuId === msg.id && (
+                      <div
+                        className={`dropdown-actions ${msg.uid === user?.uid ? "right-dropdown" : ""
+                          }`}
+                      >
+                        <button
+                          onClick={() => {
+                            setReplyTo(msg);
+                            setOpenActionMenuId(null);
+                          }}
+                        >
+                          Reply
+                        </button>
+                        {msg.type !== "poll" && (
+                          <button
+                            onClick={() => {
+                              pinMessage(msg.id, msg.pinned);
+                              setOpenActionMenuId(null);
+                            }}
+                          >
+                            {msg.pinned ? "Unpin" : "📌 Pin"}
+                          </button>
+                        )}
+                        {(msg.uid === user?.uid || isAdmin) && (
+                          <button
+                            onClick={() => {
+                              setShowDeletePopup(true);
+                              setMessageToDelete(msg.id);
+                              setOpenActionMenuId(null);
+                            }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+
+
+                <div
+                  className={`chat-message ${msg.pinned ? "pinned" : ""
+                    } ${msg.uid === user?.uid ? "own-message" : ""}`}
                 >
                   <p className="message-sender">{msg.name}</p>
                   {msg.replyTo && (
@@ -217,11 +302,8 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
                         <button
                           key={idx}
                           onClick={() => handleVote(msg.id, idx)}
-                          className={`poll-option ${
-                            msg.votes?.[user?.uid] === idx
-                              ? "poll-selected"
-                              : ""
-                          }`}
+                          className={`poll-option ${msg.votes?.[user?.uid] === idx ? "poll-selected" : ""
+                            }`}
                         >
                           {opt.text} ({opt.votes} votes)
                         </button>
@@ -243,50 +325,58 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
                   )}
                 </div>
 
-                <div className="message-actions">
-                  <button
-                    className="dots-button"
-                    onClick={(e) => {
-                      setMsgId(msg.id);
-                      e.stopPropagation();
-                      setOpenActionMenuId(
-                        openActionMenuId === msg.id ? null : msg.id
-                      );
-                    }}
-                  >
-                    ⋮
-                  </button>
-                  {openActionMenuId === msg.id && (
-                    <div className="dropdown-actions">
-                      <button
-                        onClick={() => {
-                          setReplyTo(msg);
-                          setOpenActionMenuId(null);
-                        }}
-                      >
-                        Reply
-                      </button>
-                      {msg.type !== "poll" && (
+                {/* Dots button RIGHT for other users' messages */}
+                {msg.uid !== user?.uid && (
+                  <div className="message-actions">
+                    <button
+                      className="dots-button"
+                      onClick={(e) => {
+                        setMsgId(msg.id);
+                        e.stopPropagation();
+                        setOpenActionMenuId(
+                          openActionMenuId === msg.id ? null : msg.id
+                        );
+                      }}
+                      aria-label="Message options"
+                    >
+                      ⋮
+                    </button>
+                    {openActionMenuId === msg.id && (
+                      <div className={`dropdown-actions`}>
                         <button
                           onClick={() => {
-                            pinMessage(msg.id, msg.pinned);
+                            setReplyTo(msg);
                             setOpenActionMenuId(null);
                           }}
                         >
-                          {msg.pinned ? "Unpin" : "📌 Pin"}
+                          Reply
                         </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          setShowDeletePopup(true);
-                          setOpenActionMenuId(null);
-                        }}
-                      >
-                        🗑️ Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
+                        {msg.type !== "poll" && (
+                          <button
+                            onClick={() => {
+                              pinMessage(msg.id, msg.pinned);
+                              setOpenActionMenuId(null);
+                            }}
+                          >
+                            {msg.pinned ? "Unpin" : "📌 Pin"}
+                          </button>
+                        )}
+                        {(msg.uid === user?.uid || isAdmin) && (
+                          <button
+                            onClick={() => {
+                              setShowDeletePopup(true);
+                              setMessageToDelete(msg.id);
+                              setOpenActionMenuId(null);
+                            }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        )}
+
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
             <div ref={messagesEndRef} />
@@ -358,10 +448,7 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
                 Add Option
               </button>
               <div className="poll-action-buttons">
-                <button
-                  className="close"
-                  onClick={() => setShowPollForm(false)}
-                >
+                <button className="close" onClick={() => setShowPollForm(false)}>
                   Close
                 </button>
                 <button onClick={createPoll}>Submit Poll</button>
@@ -391,23 +478,22 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
                     setShowDropdown(false);
                   }}
                 >
-                  <i class="fa-solid fa-square-poll-horizontal"></i> Poll
+                  <i className="fa-solid fa-square-poll-horizontal"></i> Poll
                 </button>
                 <button
                   className="meeting-btn"
                   onClick={() => setShowMeetingForm(true)}
-
                 >
-                <i className="fa-solid fa-video"></i> Meeting
-            </button>
-            {showMeetingForm && (
-              <AddMeetingForm
-                  onClose={() => setShowMeetingForm(false)}
-                  onSubmit={(meetingData) => createGoogleMeetEvent(meetingData)}
-              />
+                  <i className="fa-solid fa-video"></i> Meeting
+                </button>
+                {showMeetingForm && (
+                  <AddMeetingForm
+                    onClose={() => setShowMeetingForm(false)}
+                    onSubmit={(meetingData) =>
+                      createGoogleMeetEvent(meetingData)
+                    }
+                  />
                 )}
-
-            {" "}
               </div>
             )}
             <input
@@ -422,7 +508,7 @@ function ChatRoom2({ chatId, chatName, chatIcon }) {
               type="submit"
               disabled={!text.trim()}
             >
-              <i class="fa-solid fa-paper-plane"></i>
+              <i className="fa-solid fa-paper-plane"></i>
             </button>
           </form>
         </>
