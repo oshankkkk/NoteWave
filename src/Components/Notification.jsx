@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {collection,query,where,onSnapshot,doc,getDoc,} from "firebase/firestore";
 import { db } from "../firebase-config";
 import { useUser } from "../AuthContext";
-import { acceptInvitation, ignoreInvitation } from "../Firebase/Invitations";
+import { acceptInvitation } from "../Firebase/Invitations";
 
 function Notification() {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
