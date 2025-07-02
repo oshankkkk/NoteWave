@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { useUser } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
+import { sendInvitation } from "./Firebase/Invitations";
 
 const iconOptions = [
   "Icon1.png", "Icon2.png", "Icon3.png", "Icon4.png",
@@ -26,7 +27,7 @@ function AddGroups({ closeModal }) {
   const [emailQuery, setEmailQuery] = useState("");
   const [allowedMembers, setAllowedMembers] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   const { user } = useUser();
 
   const navigate = useNavigate();
@@ -39,10 +40,9 @@ function AddGroups({ closeModal }) {
       return;
     }
 
-    if (loading) return; // Prevent multiple submits
+    if (loading) return;
 
-  setLoading(true); // Show loading state
-
+    setLoading(true);
 
     try {
       const chatRef = await addDoc(collection(db, "Chat"), {});
@@ -59,16 +59,28 @@ function AddGroups({ closeModal }) {
         chatId: chatId,
       };
 
-      if (!isPublic) groupData.allowedMembers = allowedMembers;
+      if (!isPublic) {
+        groupData.allowedMembers = allowedMembers;
+      }
 
-      
       const groupRef = await addDoc(collection(db, "Group"), groupData);
 
-      
       const userRef = doc(db, "User", user.uid);
       await updateDoc(userRef, {
         groupIds: arrayUnion(groupRef.id),
       });
+
+      // ✅ Send invitations only if it's private and has allowedMembers
+      if (!isPublic && allowedMembers.length > 0) {
+        for (const email of allowedMembers) {
+          await sendInvitation({
+            senderId: user.uid,
+            receiverEmail: email,
+            groupId: groupRef.id,
+          });
+          console.log("Sending invitation to:", email);
+        }
+      }
 
       alert("Group and chat created successfully!");
       navigate("/", { state: { autoOpenChatId: chatId } });
@@ -76,9 +88,10 @@ function AddGroups({ closeModal }) {
       console.error("Error creating group and chat:", error);
       alert("Failed to add group. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50">
@@ -102,9 +115,8 @@ function AddGroups({ closeModal }) {
                   key={idx}
                   src={`/Images/publicGroupIcons/${icon}`}
                   alt={`Group Icon ${idx + 1}`}
-                  className={`w-[74px] h-[74px] rounded-full object-cover cursor-pointer border-2 ${
-                    selectedIcon === icon ? "border-fuchsia-800" : "border-transparent"
-                  }`}
+                  className={`w-[74px] h-[74px] rounded-full object-cover cursor-pointer border-2 ${selectedIcon === icon ? "border-fuchsia-800" : "border-transparent"
+                    }`}
                   onClick={() => setSelectedIcon(icon)}
                 />
               ))}
@@ -211,7 +223,7 @@ function AddGroups({ closeModal }) {
               className="px-4 py-2 bg-fuchsia-800 text-white rounded hover:bg-fuchsia-900 disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Creating...": "Create"}
+              {loading ? "Creating..." : "Create"}
             </button>
           </div>
         </form>

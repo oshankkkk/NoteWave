@@ -122,7 +122,7 @@ function Calendar() {
         .then(() => {
           return window.gapi.client.calendar.events.list({
             calendarId: "primary",
-            maxResults: 500,
+            maxResults: 5000,
             singleEvents: true,
             orderBy: "startTime",
           });

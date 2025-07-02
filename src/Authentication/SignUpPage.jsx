@@ -19,7 +19,8 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-3 bg-purple-600">
-      <div className="bg-white p-5 rounded-2xl">
+      <img src="/Images/Login-page/Loginbg.png" alt="Background image" className="absolute w-full h-full object-fill" />
+      <div className="bg-white p-5 rounded-2xl z-10">
         <div>
           <h2 className="text-3xl font-semibold text-center mb-4">
             Let's start learning

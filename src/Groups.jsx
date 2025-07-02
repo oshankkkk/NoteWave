@@ -10,29 +10,28 @@ import JoinPrivateGroupModal from "./JoinPrivateGroups";
 
 function GroupsCards() {
   const [publicGroups, setPublicGroups] = useState([]);
-  const [showAddGroupModal, setShowAddGroupModal] = useState(false);
+  const [joiningGroupId, setJoiningGroupId] = useState(null); // track which group is joining
   const { user } = useUser();
   const navigate = useNavigate();
-  const [joining, setJoining] = useState(false);
+
   const handleJoin = async (groupId) => {
+    if (!user || joiningGroupId) return;
 
-    if (joining) return; // Prevent multiple submits
+    setJoiningGroupId(groupId);
 
-  setJoining(true); // Show loading state
+    try {
+      await joinPublic(user, groupId);
 
-  try {
-    await joinPublic(user, groupId);
+      const groupDoc = await getDoc(doc(db, "Group", groupId));
+      const chatId = groupDoc.exists() ? groupDoc.data().chatId : null;
 
-    const groupDoc = await getDoc(doc(db, "Group", groupId));
-    const chatId = groupDoc.exists() ? groupDoc.data().chatId : null;
-
-    navigate("/", { state: { autoOpenChatId: chatId } });
-  } catch (err) {
-    console.error("Error joining and redirecting:", err);
-  }finally{
-    setJoining(false)
-  }
-};
+      navigate("/", { state: { autoOpenChatId: chatId } });
+    } catch (err) {
+      console.error("Error joining and redirecting:", err);
+    } finally {
+      setJoiningGroupId(null);
+    }
+  };
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -66,43 +65,57 @@ function GroupsCards() {
 
   return (
     <>
-      {publicGroups.map((group, index) => (
-        <div
-          key={group.id || index}
-          className="bg-fuchsia-200 rounded-[10px] p-4 flex flex-col items-center justify-between w-full sm:w-full md:w-[294px] shadow-md hover:shadow-lg transition-shadow duration-300"
-        >
-          <img
-            src={group.image}
-            alt={group.name}
-            className="w-[74px] h-[74px] rounded-full object-cover"
-          />
-          <div className="text-center mt-2">
-            <div className="text-[20px] font-semibold">{group.name}</div>
-            <div className="text-[16px] font-normal text-gray-700 mt-1">
-              {group.description}
+      {publicGroups.map((group, index) => {
+        const isMember = group.members?.hasOwnProperty(user?.uid);
+
+        return (
+          <div
+            key={group.id || index}
+            className="bg-fuchsia-200 rounded-[10px] p-4 flex flex-col items-center justify-between w-full sm:w-full md:w-[294px] shadow-md hover:shadow-lg transform transition-transform duration-300 hover:-translate-y-1"
+          >
+            <img
+              src={group.image}
+              alt={group.name}
+              className="w-[74px] h-[74px] rounded-full object-cover"
+            />
+            <div className="text-center mt-2">
+              <div className="text-[20px] font-semibold">{group.name}</div>
+              <div className="text-[16px] font-normal text-gray-700 mt-1">
+                {group.description}
+              </div>
+            </div>
+            <div className="w-full flex justify-between mt-4 px-1">
+              <button
+                className={`font-[14px] px-3 py-1 rounded shadow-sm 
+                  ${
+                    isMember
+                      ? "bg-fuchsia-800 text-white cursor-not-allowed"
+                      : "bg-fuchsia-800 text-white hover:bg-fuchsia-900 cursor-pointer"
+                  } 
+                  disabled:opacity-50`}
+                onClick={() => {
+                  if (!isMember) handleJoin(group.id);
+                }}
+                disabled={isMember || joiningGroupId === group.id}
+              >
+                {isMember
+                  ? "Joined"
+                  : joiningGroupId === group.id
+                  ? "Joining..."
+                  : "Join"}
+              </button>
+
+              <span className="text-sm text-gray-600">
+                {Object.keys(group.members || {}).length} members
+              </span>
             </div>
           </div>
-          <div className="w-full flex justify-between mt-4 px-1">
-            <button
-              className="font-[14px] text-white bg-fuchsia-800 px-3 py-1 rounded shadow-sm cursor-pointer hover:bg-fuchsia-900 disabled:opacity-50"
-              onClick={() => {
-                handleJoin(group.id);
-              }}
-              disabled={joining}
-            >
-              {joining ? "...": "Join"}
-            </button>
-            {console.log(group)}
-
-            <span className="text-sm text-gray-600">
-              {Object.keys(group.members || {}).length} users
-            </span>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 }
+
 
 function AddGroupsButton({ onClick }) {
   return (
