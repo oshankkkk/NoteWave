@@ -34,8 +34,7 @@ const [groupInfo, setGroupInfo] = useState(null);
       <div className="bg-purple-600 text-white p-4 flex items-center justify-between">
         <h2 className="text-lg font-medium">Group info</h2>
 
-        {/* <button className="text-2xl cursor-pointer hover:bg-green-700 rounded p-1">×</button> */}
-        <button onClick={setActiveSideBar(false)} className="text-2xl cursor-pointer hover:bg-purple-700 rounded p-1">×</button>
+        <button onClick={()=>{setActiveSideBar(false)}} className="text-2xl cursor-pointer hover:bg-purple-700 rounded p-1">×</button>
       </div>
  <div className="flex-1 overflow-y-auto">
 
