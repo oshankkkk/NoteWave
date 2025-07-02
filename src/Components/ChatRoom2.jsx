@@ -433,11 +433,12 @@ if (!snap.exists()) return;
         </>
       )}
 
-{activeSideBar &&
+
+    </div>
+    {activeSideBar &&
 
     <GroupSideBar groupData={groupData} userId={userId} setActiveSideBar={setActiveSideBar}></GroupSideBar>
 }
-    </div>
 
     </>
   );

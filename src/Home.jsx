@@ -180,7 +180,7 @@ function Home() {
               )}
               {group.Admin.includes(user.uid) && (
                 <button id="admin-edit">
-                  <i class="fa-solid fa-pen"></i>
+                  <i className="fa-solid fa-pen"></i>
                 </button>
               )}
             </div>

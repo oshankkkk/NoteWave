@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { useUser } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
+import { sendInvitation } from "./Firebase/Invitations";
 
 const iconOptions = [
   "Icon1.png", "Icon2.png", "Icon3.png", "Icon4.png",
@@ -32,53 +33,65 @@ function AddGroups({ closeModal }) {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!selectedIcon) {
-      alert("Please select a group icon.");
-      return;
+  if (!selectedIcon) {
+    alert("Please select a group icon.");
+    return;
+  }
+
+  if (loading) return;
+
+  setLoading(true);
+
+  try {
+    const chatRef = await addDoc(collection(db, "Chat"), {});
+    const chatId = chatRef.id;
+
+    const groupData = {
+      Admin: [user.uid],
+      Icon: selectedIcon,
+      Member: { [user.uid]: true },
+      Name: groupName,
+      Description: description,
+      Public: isPublic,
+      unreadCnt: {},
+      chatId: chatId,
+    };
+
+    if (!isPublic) {
+      groupData.allowedMembers = allowedMembers;
     }
 
-    if (loading) return; // Prevent multiple submits
+    const groupRef = await addDoc(collection(db, "Group"), groupData);
 
-  setLoading(true); // Show loading state
+    const userRef = doc(db, "User", user.uid);
+    await updateDoc(userRef, {
+      groupIds: arrayUnion(groupRef.id),
+    });
 
-
-    try {
-      const chatRef = await addDoc(collection(db, "Chat"), {});
-      const chatId = chatRef.id;
-
-      const groupData = {
-        Admin: user.uid,
-        Icon: selectedIcon,
-        Member: { [user.uid]: true },
-        Name: groupName,
-        Description: description,
-        Public: isPublic,
-        unreadCnt: {},
-        chatId: chatId,
-      };
-
-      if (!isPublic) groupData.allowedMembers = allowedMembers;
-
-      
-      const groupRef = await addDoc(collection(db, "Group"), groupData);
-
-      
-      const userRef = doc(db, "User", user.uid);
-      await updateDoc(userRef, {
-        groupIds: arrayUnion(groupRef.id),
-      });
-
-      alert("Group and chat created successfully!");
-      navigate("/", { state: { autoOpenChatId: chatId } });
-    } catch (error) {
-      console.error("Error creating group and chat:", error);
-      alert("Failed to add group. Please try again.");
-    } finally {
-      setLoading(false)
+    // ✅ Send invitations only if it's private and has allowedMembers
+    if (!isPublic && allowedMembers.length > 0) {
+      for (const email of allowedMembers) {
+        await sendInvitation({
+          senderId: user.uid,
+          receiverEmail: email,
+          groupId: groupRef.id,
+        });
+        console.log("Sending invitation to:", email);
+      }
     }
-  };
+
+    alert("Group and chat created successfully!");
+    navigate("/", { state: { autoOpenChatId: chatId } });
+  } catch (error) {
+    console.error("Error creating group and chat:", error);
+    alert("Failed to add group. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50">

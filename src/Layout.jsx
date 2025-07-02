@@ -5,6 +5,7 @@ import { auth } from './firebase-config';
 import { getAuth, signOut } from "firebase/auth";
 import "./styles/Home.css"; // Make sure it has the layout CSS
 import { onAuthStateChanged } from "firebase/auth";
+import Notification from "./Components/Notification";
 
 function NavBar() {
   const [isVisible, setVisible] = useState(true);
@@ -15,32 +16,31 @@ function NavBar() {
 
   const [query, setQuery] = useState('');
   const [user, setUser] = useState(null);
-const [imgSrc, setImgSrc] = React.useState('/Images/spare-avatar.png');
+  const [imgSrc, setImgSrc] = React.useState('/Images/spare-avatar.png');
 
-React.useEffect(() => {
-  if (user?.photoURL) {
-    setImgSrc(user.photoURL);
-  }
-}, [user]);
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-    
-    setUser(currentUser);
-   
-  });
-
-  return () => unsubscribe(); 
-}, []);
-  
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/login"); // or whatever your login route is
-    } catch (err) {
-      console.error("Logout error:", err);
+  React.useEffect(() => {
+    if (user?.photoURL) {
+      setImgSrc(user.photoURL);
     }
-  };
+  }, [user]);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      
+      setUser(currentUser);
+    
+    });
 
+    return () => unsubscribe(); 
+  }, []);
+    
+    const handleLogout = async () => {
+      try {
+        await signOut(auth);
+        navigate("/login"); // or whatever your login route is
+      } catch (err) {
+        console.error("Logout error:", err);
+      }
+    };
   
   return (
     <div className="app-container">
@@ -50,7 +50,7 @@ useEffect(() => {
           <span className="app-name">NoteWave</span>
           <button className="btn" id="collapse-btn" onClick={toggleSidebar}>
             {isVisible&&(<i className="fa-solid fa-chevron-left"></i>)}
-            {!isVisible&&(<i class="fa-solid fa-chevron-right"></i>)}
+            {!isVisible&&(<i className="fa-solid fa-chevron-right"></i>)}
           </button>
         </div>
 
@@ -77,10 +77,12 @@ useEffect(() => {
             </div>
           )}
         </div>
+        <Notification/>
  {/* <div className="min-h-screen fixed inset-y-0 py-5  right-3 w-[30%] flex flex-col items-center justify-center bg-purple-600 ">  */}
-        <div className="header-right" onClick={handleProfile}>
+        <div className="header-right">
          
-          <img src={imgSrc} alt="User" onError={() => setImgSrc('/Images/spare-avatar.png')} className="img-h" />
+          <img src={imgSrc} alt="User" onError={() => setImgSrc('/Images/spare-avatar.png')} className="img-h"
+          onClick={handleProfile} />
         </div>
       </header>
 
@@ -123,7 +125,7 @@ useEffect(() => {
 
       {showProfile && user && (
         <div className="profile">
-          <button id="close" onClick={handleProfile}><i class="fa-solid fa-xmark"></i></button>
+          <button id="close" onClick={handleProfile}><i className="fa-solid fa-xmark"></i></button>
           <p id="img-container">
             <img src={imgSrc} alt="User" onError={() => setImgSrc('/Images/spare-avatar.png')} className="img" />
           </p>
