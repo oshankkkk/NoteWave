@@ -18,7 +18,7 @@ import { AddMeetingForm } from "../calendar";
 import GroupSideBar from "../GroupSideBar/GroupSideBar";
 
 function ChatRoom2({groupData, chatId, chatName, chatIcon,userId }) {
-  const [activeSideBar,setActiveSideBar]=useState(true)
+  const [activeSideBar,setActiveSideBar]=useState(false)
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
