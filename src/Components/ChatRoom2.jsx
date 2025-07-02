@@ -192,11 +192,10 @@ if (!snap.exists()) return;
       ) : (
         <>
           <div className="chat-title-c">
-{/* this button wont work for somereason */}
-            {/* <button className="bg-yellow-300" onClick={()=>{setActiveSideBar(true)}} >
-              click me
-            </button> */}
-            <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>
+            <button onClick={()=>{setActiveSideBar(true)}} >
+             <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>  
+            </button>
+           
             <h2 className="chat-title">{chatName}</h2>
           </div>
           <div className="chat-messages">
@@ -434,11 +433,10 @@ if (!snap.exists()) return;
         </>
       )}
 
-    <GroupSideBar groupData={groupData} userId={userId} setActiveSideBar={setActiveSideBar}></GroupSideBar>
-{/* {activeSideBar==true &&
+{activeSideBar &&
 
     <GroupSideBar groupData={groupData} userId={userId} setActiveSideBar={setActiveSideBar}></GroupSideBar>
-} */}
+}
     </div>
 
     </>
