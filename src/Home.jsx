@@ -25,7 +25,7 @@ function Home() {
   const [grpName, setName] = useState(null);
   const [grpIcon, setIcon] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
-  const[groupData,setGroupData]=useState(null)
+  const [groupData, setGroupData] = useState(null)
   // Track auth state to get user
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -116,7 +116,7 @@ function Home() {
     };
   }, [user]);
 
-  const loadChat = async (chatID, groupId, groupName, groupIcon,group) => {
+  const loadChat = async (chatID, groupId, groupName, groupIcon, group) => {
     if (!user) return;
     const groupRef = doc(db, "Group", groupId);
     try {
@@ -125,7 +125,7 @@ function Home() {
       });
 
       console.log("Unread count reset to 0");
-  setGroupData(group)
+      setGroupData(group)
       setGrp(chatID);
       setName(groupName);
       setIcon(groupIcon);
@@ -162,11 +162,10 @@ function Home() {
           {groups.map((group) => (
             <div
               key={group.id}
-              className={`img-msg ${
-                selectedGroupId === group.id ? "selected" : ""
-              }`}
+              className={`img-msg ${selectedGroupId === group.id ? "selected" : ""
+                }`}
               onClick={() =>
-                loadChat(group.chatId, group.id, group.Name, group.Icon,group)
+                loadChat(group.chatId, group.id, group.Name, group.Icon, group)
               }
             >
               <img
@@ -178,11 +177,7 @@ function Home() {
               {group.unreadCount > 0 && (
                 <span className="unread-cnt">{group.unreadCount}</span>
               )}
-              {group.Admin.includes(user.uid) && (
-                <button id="admin-edit">
-                  <i className="fa-solid fa-pen"></i>
-                </button>
-              )}
+
             </div>
           ))}
         </ul>

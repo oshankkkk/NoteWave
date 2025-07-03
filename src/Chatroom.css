@@ -1,7 +1,7 @@
 /* ChatRoom.css */
 
 .chat-container {
-  width: 100%;
+  width: 90%;
   background-image: url("C:\Users\VICTUS\NoteWave\public\Images\chat.jpg");
   /* less padding */
   position: relative;
@@ -17,6 +17,7 @@
   font-family: 'poppins', sans-serif;
   font-size: 1vh;
   /* base font smaller */
+  margin-left: 5px;
 }
 
 
@@ -40,7 +41,7 @@
 /* Put your chat content inside and ensure it appears above the overlay */
 .chat-container>* {
   position: relative;
-  z-index: 1;
+
 }
 
 .chat-title {
@@ -51,7 +52,7 @@
   margin-bottom: 10px;
   line-height: 1.1;
   color: #fff;
-  background-color: #a214ce;
+
   height: 50px;
   border-radius: 10px 10px 0 0;
   align-items: center;
@@ -558,8 +559,8 @@ strong {
   display: flex;
   flex-direction: row;
   background-color: #a214ce;
-  height: 10%;
-  z-index: 2000;
+  height: 9.9%;
+
 }
 
 .chat-title-c img {

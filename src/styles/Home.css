@@ -11,9 +11,12 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--bg-color);
 }
-.home-main{
+
+.home-main {
   display: flex;
+
 }
+
 /* Logo */
 #logo {
   width: 45px;
@@ -94,11 +97,16 @@ body {
 .grp-list.collapsed {
   display: none;
 }
+
 .selected {
-  background-color: #e0d0ff; /* light purple or any highlight color */
-  border-left: 4px solid #8e44ad; /* optional left border for emphasis */
+  width: 100%;
+  background-color: #e0d0ff;
+  /* light purple or any highlight color */
+  border-left: 4px solid #8e44ad;
+  /* optional left border for emphasis */
   font-weight: bold;
 }
+
 .user-icon {
   font-size: 24px;
   cursor: pointer;
@@ -110,6 +118,7 @@ body {
   height: 100vh;
   width: 100%;
   padding: 1%;
+
 }
 
 .side-bar {
@@ -256,7 +265,7 @@ body {
   border-radius: 15px;
   background-color: var(--bg-color);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12),
-              0 1px 3px rgba(0, 0, 0, 0.08);
+    0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
@@ -288,7 +297,7 @@ body {
   box-shadow: 0 0 20px 5px rgba(128, 0, 255, 0.7);
   margin-bottom: 15%;
   top: 1px;
-  width:auto;
+  width: auto;
   height: auto;
   max-width: 45px;
   max-height: 45px;
@@ -307,13 +316,14 @@ body {
   left: 0;
 }
 
-#logout{
-  color:var(--btn-color);
+#logout {
+  color: var(--btn-color);
   font-weight: lighter;
   margin-top: 70px;
   font-size: 16px;
 }
-#close{
+
+#close {
   position: relative;
   margin-left: 90%;
   top: 1px;
@@ -321,105 +331,126 @@ body {
   cursor: pointer;
   color: var(--btn-color);
 }
+
 #spinner {
   animation: spin 1.6s linear infinite;
-  
+
 }
+
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
-#loading-s{
+
+#loading-s {
   position: relative;
-  left:30%;
+  left: 30%;
   color: var(--btn-color);
   font-weight: bold;
 }
-#grp-container{
-  width: 30%;
- 
-}
-#grp-container span{
-   
- margin-left: 10px;
- margin-top: 6px;
- font-weight: bold;
- font-size:16px;
-}
-.grp-icon{
-  width:45px;
-  border-radius: 50%;
-  border: 1px solid var(--btn-color);
-   margin-bottom:6px;
-}
-.img-msg{
-  display: flex;
-  flex-direction: row;
- 
-   border-bottom: 1px solid var(--text-color);
-   width:80%;
-   padding-bottom: 10px;
-   margin-top: 10px;
-   cursor: pointer;
-}
-.par{
-  display: flex;
-  flex-direction: row;
-}
-.par p{
- float: right;
- position: relative;
- margin-top: 20%;
- font-family: 'Dancing Script', cursive;
- color: var(--btn-color);
+
+#grp-container {
+  width: 40%;
 
 }
-#main-title{
-  padding:1%;
+
+#grp-container span {
+
+  margin-left: 10px;
+  margin-top: 6px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.grp-icon {
+  width: 45px;
+  border-radius: 50%;
+  border: 1px solid var(--btn-color);
+  margin-bottom: 6px;
+}
+
+.img-msg {
+  display: flex;
+  flex-direction: row;
+
+  border-bottom: 1px solid var(--text-color);
+  width: 200px;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.par {
+  display: flex;
+  flex-direction: row;
+}
+
+.par p {
+  float: right;
+  position: relative;
+  margin-top: 20%;
+  font-family: 'Dancing Script', cursive;
+  color: var(--btn-color);
+
+}
+
+#main-title {
+  padding: 1%;
   padding-left: 0%;
   font-size: 4vh;
   font-weight: bolder;
-  color:var(--btn-color)
+  color: var(--btn-color)
 }
-.app-name{
+
+.app-name {
   margin-top: 1.5%;
   position: relative;
 }
-.unread-cnt{
-   right: 5%;
-   position: absolute;
-   
-  
- 
-   background-color: var(--btn-color);
-   color: white;
+
+.unread-cnt {
+  right: 5%;
+  position: absolute;
+
+
+
+  background-color: var(--btn-color);
+  color: white;
   font-weight: bold;
   font-size: 12px;
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 12px; /* fully rounded */
+  border-radius: 12px;
+  /* fully rounded */
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-#admin-edit{
+
+#admin-edit {
   border-radius: 50%;
   margin-left: 50px;
   background-color: var(--btn-color);
   display: flex;
   padding: 1%;
-  height:34px;
+  height: 34px;
   width: 34px;
-  color: #fff;
+  color: #ae49c5;
   align-items: center;
   justify-content: center;
   display: none;
   cursor: pointer;
 }
+
 .img-msg:hover #admin-edit {
   display: flex;
 }
-.alert{
+
+.alert {
   width: 40vw;
 }
