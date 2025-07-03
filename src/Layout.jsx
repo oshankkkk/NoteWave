@@ -11,6 +11,7 @@ function NavBar() {
   const [isVisible, setVisible] = useState(true);
   const toggleSidebar = () => setVisible(prev => !prev);
 
+  
   const [showProfile, setProfile] = useState(false);
   const handleProfile = () => setProfile(prev => !prev);
 
