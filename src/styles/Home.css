@@ -7,17 +7,13 @@
   --text-color: #696767;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--bg-color);
 }
-
+.home-main{
+  display: flex;
+}
 /* Logo */
 #logo {
   width: 45px;
@@ -98,7 +94,11 @@ body {
 .grp-list.collapsed {
   display: none;
 }
-
+.selected {
+  background-color: #e0d0ff; /* light purple or any highlight color */
+  border-left: 4px solid #8e44ad; /* optional left border for emphasis */
+  font-weight: bold;
+}
 .user-icon {
   font-size: 24px;
   cursor: pointer;
@@ -266,6 +266,7 @@ body {
   font-weight: lighter;
   cursor: pointer;
   font-size: medium;
+  z-index: 3001;
 }
 
 /* Feedback Dropdown */
@@ -335,7 +336,7 @@ body {
   font-weight: bold;
 }
 #grp-container{
-  width: 100%;
+  width: 30%;
  
 }
 #grp-container span{
@@ -356,6 +357,7 @@ body {
   flex-direction: row;
  
    border-bottom: 1px solid var(--text-color);
+   width:80%;
    padding-bottom: 10px;
    margin-top: 10px;
    cursor: pointer;

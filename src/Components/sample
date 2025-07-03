@@ -1,0 +1,19 @@
+useEffect(() => {
+    if (!chatId) {
+      setMessages([]);
+      return;
+    }
+
+    const messagesRef = collection(db, "Chat", chatId, "messages");
+    const q = query(messagesRef, orderBy("time"));
+
+    onSnapshot(q, (snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        console.log("new msgs");
+        console.log(doc.id, doc.data());
+      });
+    });
+
+    scrollToBottom();
+    return () => unsubscribe();
+  }, [chatId]);
