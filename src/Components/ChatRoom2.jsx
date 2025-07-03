@@ -15,10 +15,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import "../ChatRoom.css";
 import { useUser } from "../AuthContext";
 import { AddMeetingForm } from "../calendar";
-import GroupSideBar from "../GroupSideBar/GroupSideBar";
+import { createGoogleMeetEvent } from "../meetingUtils";
 
-function ChatRoom2({groupData, chatId, chatName, chatIcon,userId }) {
-  const [activeSideBar,setActiveSideBar]=useState(true)
+function ChatRoom2({ chatId, chatName, chatIcon }) {
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -35,6 +34,30 @@ function ChatRoom2({groupData, chatId, chatName, chatIcon,userId }) {
   const messagesEndRef = useRef(null);
   const user2 = useUser();
   const [showMeetingForm, setShowMeetingForm] = useState(false);
+  const [gapiReady, setGapiReady] = useState(false);
+
+  // Load Google API script and initialize client
+  useEffect(() => {
+    if (window.gapi && window.gapi.client) {
+      setGapiReady(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://apis.google.com/js/api.js";
+    script.onload = () => {
+      window.gapi.load("client", () => {
+        window.gapi.client
+          .init({
+            discoveryDocs: [
+              "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+            ],
+          })
+          .then(() => setGapiReady(true));
+      });
+    };
+    document.body.appendChild(script);
+  }, []);
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, setUser);
     return () => unsubscribeAuth();
@@ -76,6 +99,9 @@ function ChatRoom2({groupData, chatId, chatName, chatIcon,userId }) {
           replyTo: data.replyTo || null,
           pinned: data.pinned || false,
           uid: data.uid,
+          meetingLink: data.meetingLink || null,
+          eventStart: data.eventStart || null,
+          eventEnd: data.eventEnd || null,
         };
       });
       setMessages(msgs);
@@ -159,7 +185,7 @@ function ChatRoom2({groupData, chatId, chatName, chatIcon,userId }) {
   const handleVote = async (messageId, optionIndex) => {
     const msgRef = doc(db, "Chat", chatId, "messages", messageId);
     const snap = await getDoc(msgRef);
-if (!snap.exists()) return;
+    if (!snap.exists()) return;
 
     const data = snap.data();
     const prevVote = data.votes?.[user.uid];
@@ -176,14 +202,12 @@ if (!snap.exists()) return;
     await updateDoc(msgRef, { votes: updatedVotes, options: updatedOptions });
   };
 
-  const showMeeting = () => {
-    //setMeeting(!isMeeting);
-    //if (isMeeting) {
-    return AddMeetingForm;
-    //}
-  };
+  function formatGoogleDate(dateString) {
+    const dt = new Date(dateString);
+    return dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  }
+
   return (
-    <>
     <div className="chat-container">
       {!chatId ? (
         <div className="no-chat-selected">
@@ -192,10 +216,7 @@ if (!snap.exists()) return;
       ) : (
         <>
           <div className="chat-title-c">
-            <button onClick={()=>{setActiveSideBar(true)}} >
-             <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>  
-            </button>
-           
+            <img src={`/Images/publicGroupIcons/${chatIcon}`}></img>
             <h2 className="chat-title">{chatName}</h2>
           </div>
           <div className="chat-messages">
@@ -232,6 +253,61 @@ if (!snap.exists()) return;
                         </button>
                       ))}
                     </>
+                  ) : msg.type === "meeting" ? (
+                    <div>
+                      <div>
+                        <strong>{msg.text.split('\n').map((line, idx) => (
+                          <React.Fragment key={idx}>
+                            {line}
+                            <br />
+                          </React.Fragment>
+                        ))}</strong>
+                      </div>
+                      <a
+                        href={msg.meetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          marginTop: "10px",
+                          background: "#ad5eeb",
+                          color: "white",
+                          padding: "10px 10px",
+                          border: "none",
+                          borderRadius: "5px",
+                          marginRight: "8px",
+                          textDecoration: "none",
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                          display: "inline-block",
+                          width: "160px",
+                          textAlign: "center"
+                        }}
+                      >
+                        Join Meeting
+                      </a>
+                      <button
+                        className="add-to-calendar-btn"
+                        style={{
+                          background: "#ad5eeb",
+                          color: "white",
+                          padding: "10px 10px",
+                          border: "none",
+                          borderRadius: "5px",
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                          display: "inline-block",
+                          width: "160px",
+                          textAlign: "center"
+                        }}
+                        onClick={() => {
+                          const details = `${msg.text}\nJoin Meeting: ${msg.meetingLink}`;
+                          const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(msg.text)}&dates=${formatGoogleDate(msg.eventStart)}/${formatGoogleDate(msg.eventEnd)}&details=${encodeURIComponent(details)}`;
+                          window.open(url, "_blank");
+                        }}
+                      >
+                        Add to Calendar
+                      </button>
+                    </div>
                   ) : (
                     <p className="message-text">
                       {msg.text === null ? (
@@ -396,23 +472,15 @@ if (!snap.exists()) return;
                     setShowDropdown(false);
                   }}
                 >
-                  <i class="fa-solid fa-square-poll-horizontal"></i> Poll
+                  <i className="fa-solid fa-square-poll-horizontal"></i> Poll
                 </button>
                 <button
                   className="meeting-btn"
                   onClick={() => setShowMeetingForm(true)}
-
+                  disabled={!gapiReady}
                 >
-                <i className="fa-solid fa-video"></i> Meeting
-            </button>
-            {showMeetingForm && (
-              <AddMeetingForm
-                  onClose={() => setShowMeetingForm(false)}
-                  onSubmit={(meetingData) => createGoogleMeetEvent(meetingData)}
-              />
-                )}
-
-            {" "}
+                  <i className="fa-solid fa-video"></i> Meeting
+                </button>
               </div>
             )}
             <input
@@ -427,20 +495,48 @@ if (!snap.exists()) return;
               type="submit"
               disabled={!text.trim()}
             >
-              <i class="fa-solid fa-paper-plane"></i>
+              <i className="fa-solid fa-paper-plane"></i>
             </button>
           </form>
+
+          {showMeetingForm && (
+            <AddMeetingForm
+              onClose={() => setShowMeetingForm(false)}
+              onSubmit={async (meetingData) => {
+                const accessToken = localStorage.getItem("calendarAccessToken");
+                if (!accessToken) {
+                  alert("Please sign in to Google first.");
+                  return;
+                }
+                try {
+                  const event = await createGoogleMeetEvent(accessToken, meetingData);
+                  if (!event.hangoutLink) {
+                    alert("Failed to create Google Meet link. Please try again.");
+                    return;
+                  }
+                  await addDoc(collection(db, "Chat", chatId, "messages"), {
+                    text: `Meeting:\n${event.summary} at ${new Date(event.start.dateTime).toLocaleString()}`,
+                    time: serverTimestamp(),
+                    uid: user.uid,
+                    sender: user.displayName,
+                    pinned: false,
+                    type: "meeting",
+                    meetingLink: event.hangoutLink,
+                    eventId: event.id,
+                    eventStart: event.start.dateTime,
+                    eventEnd: event.end.dateTime,
+                  });
+                  setShowMeetingForm(false);
+                } catch (err) {
+                  console.error("Meeting creation failed:", err);
+                  alert("Failed to create meeting: " + err.message);
+                }
+              }}
+            />
+          )}
         </>
       )}
-
-
     </div>
-    {activeSideBar &&
-
-    <GroupSideBar groupData={groupData} userId={userId} setActiveSideBar={setActiveSideBar}></GroupSideBar>
-}
-
-    </>
   );
 }
 

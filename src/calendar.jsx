@@ -1,24 +1,41 @@
-const GOOGLE_API_KEY = "AIzaSyCAGgSKVlzcjBpOnaPxticoDAKzCKSR_6Y";
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/react";
 import { createViewMonthGrid, createViewWeek } from "@schedule-x/calendar";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
 import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
 import "@schedule-x/theme-default/dist/calendar.css";
 import "./calendar.css";
+import { createGoogleMeetEvent } from "./meetingUtils";
 
 function AddMeetingForm({ onClose, onSubmit }) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(30);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = () => {
-    if (!title || !date || !time || !duration)
-      return alert("Fill in all fields");
+    if (!title || !date || !time || !duration) {
+      alert("Fill in all fields");
+      return;
+    }
+    
+    // Validate duration is a positive number
+    const durationNum = parseInt(duration);
+    if (isNaN(durationNum) || durationNum <= 0) {
+      alert("Duration must be a positive number");
+      return;
+    }
+    
+    // Validate date and time
     const startDateTime = new Date(`${date}T${time}`);
-    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
+    if (isNaN(startDateTime.getTime())) {
+      alert("Invalid date or time");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    const endDateTime = new Date(startDateTime.getTime() + durationNum * 60000);
     onSubmit({ title, start: startDateTime, end: endDateTime });
     onClose();
   };
@@ -44,8 +61,9 @@ function AddMeetingForm({ onClose, onSubmit }) {
         <label>Duration (minutes)</label>
         <input
           type="number"
+          min="1"
           value={duration}
-          onChange={(e) => setDuration(e.target.value)}
+          onChange={(e) => setDuration(parseInt(e.target.value) || 30)}
         />
         <div
           className="calendar-modal-actions"
@@ -55,12 +73,13 @@ function AddMeetingForm({ onClose, onSubmit }) {
             justifyContent: "space-between",
           }}
         >
-          <button onClick={onClose}>Cancel</button>
+          <button onClick={onClose} disabled={isSubmitting}>Cancel</button>
           <button
             onClick={handleSubmit}
+            disabled={isSubmitting}
             style={{ backgroundColor: "#9333ea", color: "white" }}
           >
-            Create
+            {isSubmitting ? "Creating..." : "Create"}
           </button>
         </div>
       </div>
@@ -71,42 +90,91 @@ function AddMeetingForm({ onClose, onSubmit }) {
 // Helper function to format datetime for ScheduleX
 function formatForScheduleX(dateTimeString) {
   const dt = new Date(dateTimeString);
-  return dt.toISOString().replace("T", " ").substring(0, 16);
+  const localYear = dt.getFullYear();
+  const localMonth = String(dt.getMonth() + 1).padStart(2, '0');
+  const localDay = String(dt.getDate()).padStart(2, '0');
+  const localHour = String(dt.getHours()).padStart(2, '0');
+  const localMinute = String(dt.getMinutes()).padStart(2, '0');
+
+  return `${localYear}-${localMonth}-${localDay} ${localHour}:${localMinute}`;
 }
 
 function Calendar() {
   const [accessToken, setAccessToken] = useState(null);
   const [showMeetingForm, setShowMeetingForm] = useState(false);
-  const [events, setEvents] = useState(null); // Start with null to track loading state
+  const [events, setEvents] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const scriptRef = useRef(null);
+  const toastTimeoutRef = useRef(null);
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://apis.google.com/js/api.js";
-    script.onload = () => console.log("✅ gapi script loaded");
-    document.body.appendChild(script);
+    // Check if script already exists
+    if (document.querySelector('script[src="https://apis.google.com/js/api.js"]')) {
+      console.log("✅ gapi script already loaded");
+      return;
+    }
+
+    scriptRef.current = document.createElement("script");
+    scriptRef.current.src = "https://apis.google.com/js/api.js";
+    scriptRef.current.onload = () => console.log("✅ gapi script loaded");
+    document.body.appendChild(scriptRef.current);
+
+    // Cleanup function
+    return () => {
+      if (scriptRef.current && scriptRef.current.parentNode) {
+        scriptRef.current.parentNode.removeChild(scriptRef.current);
+      }
+    };
   }, []);
 
   const calendar = useCalendarApp({
     views: [createViewMonthGrid(), createViewWeek()],
     selectedDate,
-    events: events || [], // fallback to empty array if events is null
+    events: events || [],
     plugins: [createEventModalPlugin(), createDragAndDropPlugin()],
   });
 
   const showToast = (msg) => {
+    // Clear existing timeout
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+    
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(""), 3000);
+    toastTimeoutRef.current = setTimeout(() => setToastMessage(""), 3000);
   };
+
+  // Cleanup toast timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("calendarAccessToken");
+    if (token) setAccessToken(token);
+  }, []);
+
+  useEffect(() => {
+    if (accessToken && calendar?.events?.set) {
+      fetchGoogleCalendarEvents(accessToken);
+    }
+  }, [accessToken, calendar]);
 
   const fetchGoogleCalendarEvents = (token) => {
     if (!calendar?.events?.set) {
       console.warn("⚠ Calendar not ready yet, skipping fetch");
       return;
     }
+
+    setIsLoading(true);
 
     window.gapi.load("client", () => {
       window.gapi.client
@@ -134,15 +202,15 @@ function Calendar() {
           );
 
           const mapped = validEvents.map((event) => {
-            const start =
-              event.start.dateTime || `${event.start.date}T00:00:00`;
+            const start = event.start.dateTime || `${event.start.date}T00:00:00`;
             const end = event.end.dateTime || `${event.end.date}T23:59:00`;
+            const hasLink = Boolean(event.hangoutLink);
             return {
               id: event.id,
               title: event.summary,
               start: formatForScheduleX(start),
               end: formatForScheduleX(end),
-              description: `Join Meeting: ${event.hangoutLink || "None"}`,
+              description: event.description || (hasLink ? `Your Meeting link: ${event.hangoutLink}` : ""),
             };
           });
 
@@ -150,83 +218,59 @@ function Calendar() {
           calendar.events.set(mapped);
           setEvents(mapped);
 
-          if (mapped.length > 0) {
-            setSelectedDate(mapped[0].start.split(" ")[0]);
+          // Safe access to first event
+          if (mapped.length > 0 && mapped[0]?.start) {
+            const firstEventDate = mapped[0].start.split(" ")[0];
+            if (firstEventDate) {
+              setSelectedDate(firstEventDate);
+            }
           }
         })
         .catch((err) => {
           console.error("❌ Fetch Error:", err);
-          setEvents([]); // Prevent infinite loading if error
+          setEvents([]);
+          showToast("❌ Failed to load calendar events");
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     });
   };
 
-  const createGoogleMeetEvent = (meetingData) => {
-    if (!accessToken) return alert("Please sign in first.");
+  const handleCreateMeeting = async (meetingData) => {
+    if (!accessToken) {
+      alert("Please sign in first.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const event = await createGoogleMeetEvent(accessToken, meetingData);
+      const meetLink = event.hangoutLink;
 
-    const event = {
-      summary: meetingData.title,
-      start: {
-        dateTime: meetingData.start.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      end: {
-        dateTime: meetingData.end.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      conferenceData: {
-        createRequest: {
-          requestId: `${Date.now()}`,
-          conferenceSolutionKey: { type: "hangoutsMeet" },
-        },
-      },
-    };
+      const newEvent = {
+        id: event.id,
+        title: event.summary,
+        start: formatForScheduleX(event.start.dateTime),
+        end: formatForScheduleX(event.end.dateTime),
+        description: meetLink ? `Join Meeting: ${meetLink}` : "",
+      };
 
-    window.gapi.client
-      .request({
-        path: "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-        method: "POST",
-        headers: {
-          Authorization: Bearer`${accessToken}`,
-        },
-        params: { conferenceDataVersion: 1 },
-        body: event,
-      })
-      .then((response) => {
-        const result = response.result;
-        const meetLink = result.hangoutLink;
-
-        const newEvent = {
-          id: result.id,
-          title: result.summary,
-          start: formatForScheduleX(result.start.dateTime),
-          end: formatForScheduleX(result.end.dateTime),
-          description: `Join Meeting: ${meetLink}`,
-        };
-
-        const updated = [...events, newEvent];
-        setEvents(updated);
-        calendar?.events?.set?.(updated);
-        showToast("✅ Meeting created and added to calendar!");
-      })
-      .catch((err) => console.error("❌ Meet creation failed:", err));
+      const updated = [...(events || []), newEvent];
+      setEvents(updated);
+      calendar?.events?.set?.(updated);
+      showToast("✅ Meeting created and added to calendar!");
+    } catch (err) {
+      console.error("❌ Meet creation failed:", err);
+      showToast("❌ Failed to create meeting");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("calendarAccessToken");
-    if (token) setAccessToken(token);
-  }, []);
-
-  useEffect(() => {
-    if (accessToken && calendar?.events?.set) {
-      fetchGoogleCalendarEvents(accessToken);
-    }
-  }, [accessToken, calendar]);
-
-  if (events === null) {
+  if (events === null || isLoading) {
     return (
       <div style={{ padding: "20px", fontSize: "18px" }}>
-        Loading calendar events...
+        {isLoading ? "Loading..." : "Loading calendar events..."}
       </div>
     );
   }
@@ -243,13 +287,15 @@ function Calendar() {
         <button
           className="calendar-add-meeting-btn"
           onClick={() => setShowMeetingForm(true)}
+          disabled={isLoading}
           style={{
             backgroundColor: "#ad5eeb",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: "pointer",
+            cursor: isLoading ? "not-allowed" : "pointer",
             padding: "7px",
+            opacity: isLoading ? 0.6 : 1,
           }}
         >
           + Add Meeting
@@ -259,7 +305,7 @@ function Calendar() {
       {showMeetingForm && (
         <AddMeetingForm
           onClose={() => setShowMeetingForm(false)}
-          onSubmit={(meetingData) => createGoogleMeetEvent(meetingData)}
+          onSubmit={handleCreateMeeting}
         />
       )}
 
@@ -288,4 +334,4 @@ function Calendar() {
   );
 }
 
-export { Calendar, AddMeetingForm ,};
+export { Calendar, AddMeetingForm };
