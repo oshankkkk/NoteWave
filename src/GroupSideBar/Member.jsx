@@ -1,9 +1,9 @@
 import { db } from "../firebase-config";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-export default function Member({ memberID,adminId }) {
-const[memberName,setMemberName]=useState("")
-const[memberMail,setMemberMail]=useState("")
+export default function Member({ memberID, adminId }) {
+  const [memberName, setMemberName] = useState("")
+  const [memberMail, setMemberMail] = useState("")
   useEffect(() => {
     //   if (!user) return;
     const fetchUser = async () => {
@@ -30,10 +30,8 @@ const[memberMail,setMemberMail]=useState("")
       key={memberID}
       className="flex items-center space-x-3 py-3 px-2 hover:bg-gray-50 rounded-lg cursor-pointer"
     >
-      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg">
-        {/* {member.avatar} */}
-      </div>
-      <div className="flex-1">
+
+      <div className="flex-1 ">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium text-gray-900">{memberName}</p>
           {/* {member.isCreator && (
@@ -49,7 +47,7 @@ const[memberMail,setMemberMail]=useState("")
         </div>
         <p className="text-xs text-gray-500">{memberMail}</p>
       </div>
-      {memberID===adminId && <span className="text-blue-600 text-sm">🛡️</span>}
-    </div>
+      {memberID === adminId && <span className="text-blue-600 text-sm">🛡️</span>}
+    </div >
   );
 }

@@ -288,4 +288,4 @@ function Calendar() {
   );
 }
 
-export { Calendar, AddMeetingForm ,};
+export { Calendar, AddMeetingForm };

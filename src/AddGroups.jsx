@@ -33,64 +33,64 @@ function AddGroups({ closeModal }) {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!selectedIcon) {
-    alert("Please select a group icon.");
-    return;
-  }
-
-  if (loading) return;
-
-  setLoading(true);
-
-  try {
-    const chatRef = await addDoc(collection(db, "Chat"), {});
-    const chatId = chatRef.id;
-
-    const groupData = {
-      Admin: [user.uid],
-      Icon: selectedIcon,
-      Member: { [user.uid]: true },
-      Name: groupName,
-      Description: description,
-      Public: isPublic,
-      unreadCnt: {},
-      chatId: chatId,
-    };
-
-    if (!isPublic) {
-      groupData.allowedMembers = allowedMembers;
+    if (!selectedIcon) {
+      alert("Please select a group icon.");
+      return;
     }
 
-    const groupRef = await addDoc(collection(db, "Group"), groupData);
+    if (loading) return;
 
-    const userRef = doc(db, "User", user.uid);
-    await updateDoc(userRef, {
-      groupIds: arrayUnion(groupRef.id),
-    });
+    setLoading(true);
 
-    // ✅ Send invitations only if it's private and has allowedMembers
-    if (!isPublic && allowedMembers.length > 0) {
-      for (const email of allowedMembers) {
-        await sendInvitation({
-          senderId: user.uid,
-          receiverEmail: email,
-          groupId: groupRef.id,
-        });
-        console.log("Sending invitation to:", email);
+    try {
+      const chatRef = await addDoc(collection(db, "Chat"), {});
+      const chatId = chatRef.id;
+
+      const groupData = {
+        Admin: [user.uid],
+        Icon: selectedIcon,
+        Member: { [user.uid]: true },
+        Name: groupName,
+        Description: description,
+        Public: isPublic,
+        unreadCnt: {},
+        chatId: chatId,
+      };
+
+      if (!isPublic) {
+        groupData.allowedMembers = allowedMembers;
       }
-    }
 
-    alert("Group and chat created successfully!");
-    navigate("/", { state: { autoOpenChatId: chatId } });
-  } catch (error) {
-    console.error("Error creating group and chat:", error);
-    alert("Failed to add group. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+      const groupRef = await addDoc(collection(db, "Group"), groupData);
+
+      const userRef = doc(db, "User", user.uid);
+      await updateDoc(userRef, {
+        groupIds: arrayUnion(groupRef.id),
+      });
+
+      // ✅ Send invitations only if it's private and has allowedMembers
+      if (!isPublic && allowedMembers.length > 0) {
+        for (const email of allowedMembers) {
+          await sendInvitation({
+            senderId: user.uid,
+            receiverEmail: email,
+            groupId: groupRef.id,
+          });
+          console.log("Sending invitation to:", email);
+        }
+      }
+
+      alert("Group and chat created successfully!");
+      navigate("/", { state: { autoOpenChatId: chatId } });
+    } catch (error) {
+      console.error("Error creating group and chat:", error);
+      alert("Failed to add group. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -115,9 +115,8 @@ function AddGroups({ closeModal }) {
                   key={idx}
                   src={`/Images/publicGroupIcons/${icon}`}
                   alt={`Group Icon ${idx + 1}`}
-                  className={`w-[74px] h-[74px] rounded-full object-cover cursor-pointer border-2 ${
-                    selectedIcon === icon ? "border-fuchsia-800" : "border-transparent"
-                  }`}
+                  className={`w-[74px] h-[74px] rounded-full object-cover cursor-pointer border-2 ${selectedIcon === icon ? "border-fuchsia-800" : "border-transparent"
+                    }`}
                   onClick={() => setSelectedIcon(icon)}
                 />
               ))}
@@ -224,7 +223,7 @@ function AddGroups({ closeModal }) {
               className="px-4 py-2 bg-fuchsia-800 text-white rounded hover:bg-fuchsia-900 disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Creating...": "Create"}
+              {loading ? "Creating..." : "Create"}
             </button>
           </div>
         </form>
