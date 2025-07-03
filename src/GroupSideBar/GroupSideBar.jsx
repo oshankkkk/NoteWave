@@ -31,7 +31,7 @@ export default function GroupSideBar({ groupData, userId, setActiveSideBar }) {
 
   return (
 
-    <div className="right-0 w-1/4 fixed h-[700px] bg-white  shadow overflow-hidden">
+    <div className="right-0 w-1/4 fixed h-screen bg-white shadow">
       <div className="bg-[#ae49c5] text-white p-4 flex items-center justify-between">
         <h2 className="text-lg font-medium">Group info</h2>
         <button
@@ -42,7 +42,7 @@ export default function GroupSideBar({ groupData, userId, setActiveSideBar }) {
         </button>
       </div>
 
-      <div className="flex flex-col h-[calc(92vh-64px)] overflow-hidden">
+      <div className="flex flex-col h-[calc(92vh-64px)]">
         {/* Adjust 64px if your header is a different height */}
 
         <GroupNameAndAvatar
@@ -57,13 +57,15 @@ export default function GroupSideBar({ groupData, userId, setActiveSideBar }) {
           groupId={groupData.id}
         />
 
-        <div className="overflow-y-auto flex-1">
+        {/* Make only the member list scrollable */}
+        <div className="overflow-y-auto grow">
           <MemberList
             members={groupData.Member}
             adminId={groupData.Admin}
           />
         </div>
 
+        {/* Exit button always visible at the bottom */}
         <ExitGroup groupId={groupData.id} userId={userId} />
       </div>
     </div>
