@@ -2,7 +2,7 @@
 
 .chat-container {
   width: 90%;
-  background-image: url("C:\Users\VICTUS\NoteWave\public\Images\chat.jpg");
+  background-image: url("/public/Images/chat.jpg");
   /* less padding */
   position: relative;
 

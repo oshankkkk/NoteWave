@@ -10,6 +10,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
+import { createGoogleMeetEvent } from "../meetingUtils";
 import { db, auth } from "../firebase-config";
 import { onAuthStateChanged } from "firebase/auth";
 import "../ChatRoom.css";
@@ -37,6 +38,29 @@ function ChatRoom2({ chatId, chatName, chatIcon, userId, groupData }) {
   const [showMeetingForm, setShowMeetingForm] = useState(false);
   const [adminUids, setAdminUids] = useState([]);
   const isAdmin = user?.uid && adminUids.includes(String(user.uid));
+  const [gapiReady, setGapiReady] = useState(false);
+
+  // Load Google API script and initialize client
+  useEffect(() => {
+    if (window.gapi && window.gapi.client) {
+      setGapiReady(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://apis.google.com/js/api.js";
+    script.onload = () => {
+      window.gapi.load("client", () => {
+        window.gapi.client
+          .init({
+            discoveryDocs: [
+              "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+            ],
+          })
+          .then(() => setGapiReady(true));
+      });
+    };
+    document.body.appendChild(script);
+  }, []);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, setUser);
@@ -61,20 +85,11 @@ function ChatRoom2({ chatId, chatName, chatIcon, userId, groupData }) {
     if (!chatId) return;
 
     const fetchAdmins = async () => {
-      console.log("📢 fetchAdmins called for chatId:", chatId); // <-- ADD THIS
       const groupRef = doc(db, "Group", chatId);
       const groupSnap = await getDoc(groupRef);
       if (groupSnap.exists()) {
         const groupData = groupSnap.data();
         setAdminUids(groupData.Admin || []);
-
-        // 🧪 Debug logs here
-        console.log("Fetched Admin UIDs:", groupData.Admin);
-        console.log("Logged-in UID:", auth.currentUser?.uid);
-        console.log(
-          "Is Admin:",
-          groupData.Admin?.includes(String(auth.currentUser?.uid))
-        );
       }
     };
 
@@ -103,6 +118,9 @@ function ChatRoom2({ chatId, chatName, chatIcon, userId, groupData }) {
           replyTo: data.replyTo || null,
           pinned: data.pinned || false,
           uid: data.uid,
+          meetingLink: data.meetingLink || null,
+          eventStart: data.eventStart || null,
+          eventEnd: data.eventEnd || null,
         };
       });
       setMessages(msgs);
@@ -205,7 +223,13 @@ function ChatRoom2({ chatId, chatName, chatIcon, userId, groupData }) {
 
   const showMeeting = () => {
     return AddMeetingForm;
+
   };
+  function formatGoogleDate(dateString) {
+    const dt = new Date(dateString);
+    return dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  }
+
   useEffect(() => {
     if (chatId) {
       setActiveSideBar(false); // close sidebar when chat is loaded
@@ -313,13 +337,76 @@ function ChatRoom2({ chatId, chatName, chatIcon, userId, groupData }) {
                           <button
                             key={idx}
                             onClick={() => handleVote(msg.id, idx)}
-                            className={`poll-option ${msg.votes?.[user?.uid] === idx ? "poll-selected" : ""
-                              }`}
+                            className={`poll-option ${msg.votes?.[user?.uid] === idx ? "poll-selected" : ""}`}
                           >
                             {opt.text} ({opt.votes} votes)
                           </button>
                         ))}
                       </>
+                    ) : msg.type === "meeting" ? (
+                      <div>
+                        <div>
+                          <strong>{msg.text.split('\n').map((line, idx) => (
+                            <React.Fragment key={idx}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))}</strong>
+                        </div>
+                        {/* Defensive checks for meetingLink, eventStart, eventEnd */}
+                        {msg.meetingLink && msg.eventStart && msg.eventEnd ? (
+                          <>
+                            <a
+                              href={msg.meetingLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                marginTop: "10px",
+                                background: "#ad5eeb",
+                                color: "white",
+                                padding: "10px 10px",
+                                border: "none",
+                                borderRadius: "5px",
+                                marginRight: "8px",
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                display: "inline-block",
+                                width: "160px",
+                                textAlign: "center"
+                              }}
+                            >
+                              Join Meeting
+                            </a>
+                            <button
+                              className="add-to-calendar-btn"
+                              style={{
+                                background: "#ad5eeb",
+                                color: "white",
+                                padding: "10px 10px",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                display: "inline-block",
+                                width: "160px",
+                                textAlign: "center"
+                              }}
+                              onClick={() => {
+                                const details = `${msg.text}\nJoin Meeting: ${msg.meetingLink}`;
+                                const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(msg.text)}&dates=${formatGoogleDate(msg.eventStart)}/${formatGoogleDate(msg.eventEnd)}&details=${encodeURIComponent(details)}`;
+                                window.open(url, "_blank");
+                              }}
+                            >
+                              Add to Calendar
+                            </button>
+                          </>
+                        ) : (
+                          <div style={{ color: 'red', marginTop: '10px' }}>
+                            Meeting details are missing or incomplete.
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <p className="message-text">
                         {msg.text === null ? (
@@ -468,61 +555,90 @@ function ChatRoom2({ chatId, chatName, chatIcon, userId, groupData }) {
             )}
 
             <form
-              className="chat-input-area"
-              onSubmit={(e) => {
-                e.preventDefault();
-                sendMessage();
-              }}
+            className="chat-input-area"
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMessage();
+            }}
+          >
+            <button
+              type="button"
+              className="plus-button"
+              onClick={() => setShowDropdown((prev) => !prev)}
             >
-              <button
-                type="button"
-                className="plus-button"
-                onClick={() => setShowDropdown((prev) => !prev)}
-              >
-                ➕
-              </button>
-              {showDropdown && !showPollForm && (
-                <div className="dropdown-menu">
-                  <button
-                    onClick={() => {
-                      setShowPollForm(true);
-                      setShowDropdown(false);
-                    }}
-                  >
-                    <i className="fa-solid fa-square-poll-horizontal"></i> Poll
-                  </button>
-                  <button
-                    className="meeting-btn"
-                    onClick={() => setShowMeetingForm(true)}
-                  >
-                    <i className="fa-solid fa-video"></i> Meeting
-                  </button>
-                  {showMeetingForm && (
-                    <AddMeetingForm
-                      onClose={() => setShowMeetingForm(false)}
-                      onSubmit={(meetingData) =>
-                        createGoogleMeetEvent(meetingData)
-                      }
-                    />
-                  )}
-                </div>
-              )}
-              <input
-                className="chat-input"
-                type="text"
-                placeholder="Type a message"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              />
-              <button
-                className="send-button"
-                type="submit"
-                disabled={!text.trim()}
-              >
-                <i className="fa-solid fa-paper-plane"></i>
-              </button>
-            </form>
-          </>
+              ➕
+            </button>
+            {showDropdown && !showPollForm && (
+              <div className="dropdown-menu">
+                <button
+                  onClick={() => {
+                    setShowPollForm(true);
+                    setShowDropdown(false);
+                  }}
+                >
+                  <i className="fa-solid fa-square-poll-horizontal"></i> Poll
+                </button>
+                <button
+                  className="meeting-btn"
+                  onClick={() => setShowMeetingForm(true)}
+                  disabled={!gapiReady}
+                >
+                  <i className="fa-solid fa-video"></i> Meeting
+                </button>
+              </div>
+            )}
+            <input
+              className="chat-input"
+              type="text"
+              placeholder="Type a message"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+            <button
+              className="send-button"
+              type="submit"
+              disabled={!text.trim()}
+            >
+              <i className="fa-solid fa-paper-plane"></i>
+            </button>
+          </form>
+
+          {showMeetingForm && (
+            <AddMeetingForm
+              onClose={() => setShowMeetingForm(false)}
+              onSubmit={async (meetingData) => {
+                const accessToken = localStorage.getItem("calendarAccessToken");
+                if (!accessToken) {
+                  alert("Please sign in to Google first.");
+                  return;
+                }
+                try {
+                  const event = await createGoogleMeetEvent(accessToken, meetingData);
+                  if (!event.hangoutLink) {
+                    alert("Failed to create Google Meet link. Please try again.");
+                    return;
+                  }
+                  await addDoc(collection(db, "Chat", chatId, "messages"), {
+                    text: `Meeting:\n${event.summary} at ${new Date(event.start.dateTime).toLocaleString()}`,
+                    time: serverTimestamp(),
+                    uid: user.uid,
+                    sender: user.displayName,
+                    pinned: false,
+                    type: "meeting",
+                    meetingLink: event.hangoutLink,
+                    eventId: event.id,
+                    eventStart: event.start.dateTime,
+                    eventEnd: event.end.dateTime,
+                  });
+                  setShowMeetingForm(false);
+                } catch (err) {
+                  console.error("Meeting creation failed:", err);
+                  alert("Failed to create meeting: " + (err?.message || JSON.stringify(err)));
+                }
+              }}
+            />
+          )}
+          </>//keep this one
         )}
       </div>
       {
