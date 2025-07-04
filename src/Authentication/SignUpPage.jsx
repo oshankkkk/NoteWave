@@ -21,6 +21,7 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center p-3 bg-purple-600">
       <img src="/Images/Login-page/Loginbg.png" alt="Background image" className="absolute w-full h-full object-fill" />
       <div className="bg-white p-5 rounded-2xl z-10">
+        <div className="flex items-center justify-center"><img src="public/Images/logo.png" alt="logo"></img></div>
         <div>
           <h2 className="text-3xl font-semibold text-center mb-4">
             Let's start learning
@@ -35,11 +36,9 @@ export default function SignUpPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your username"
-              className={`w-full px-4 py-2 border ${
-                error ? "border-red-500" : "border-gray-300"
-              } rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-                error ? "focus:ring-red-500" : "focus:ring-blue-500"
-              } transition-colors`}
+              className={`w-full px-4 py-2 border ${error ? "border-red-500" : "border-gray-300"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 ${error ? "focus:ring-red-500" : "focus:ring-blue-500"
+                } transition-colors`}
             />
             {error && (
               <p className="text-red-500 text-sm mt-1">{error}</p>
@@ -76,8 +75,8 @@ export default function SignUpPage() {
               <a
                 href="#"
                 className="text-purple-600 font-medium transition-colors duration-200"
-   onClick={() =>  // ✅ use navigate here
-                navigate("/login")}
+                onClick={() =>  // ✅ use navigate here
+                  navigate("/login")}
 
 
               >
