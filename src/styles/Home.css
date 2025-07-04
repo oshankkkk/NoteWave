@@ -15,6 +15,31 @@ body {
 .home-main {
   display: flex;
 
+
+}
+
+.home-pic-wrapper {
+
+  /* Centers the image */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  /* Ensures full viewport height */
+  background-color: #EBD8F036;
+
+}
+
+.home-pic {
+  background-image: url(\public\Images\home-new.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  margin: 0;
+  width: 100%;
+
+  padding: 180px;
+  padding-top: 290px;
 }
 
 /* Logo */
@@ -356,6 +381,7 @@ body {
 
 #grp-container {
   width: 40%;
+  overflow-y: scroll;
 
 }
 
@@ -365,6 +391,7 @@ body {
   margin-top: 6px;
   font-weight: bold;
   font-size: 16px;
+  overflow-y: scroll;
 }
 
 .grp-icon {

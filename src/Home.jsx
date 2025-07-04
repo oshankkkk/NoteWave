@@ -26,6 +26,7 @@ function Home() {
   const [grpIcon, setIcon] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [groupData, setGroupData] = useState(null)
+  const [chatWallpaper, setChatWallpaper] = useState(true);
   // Track auth state to get user
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -34,6 +35,8 @@ function Home() {
 
     return () => unsubscribeAuth();
   }, []);
+
+
 
   useEffect(() => {
     if (!user) {
@@ -151,11 +154,13 @@ function Home() {
 
   return (
     <div className="home-main">
+
       {groups.length === 0 ? (
         <div className="par">
           <img src="/Images/no-groups.png" alt="No groups" className="alert" />
           <p>You haven't joined any grp so far</p>
         </div>
+
       ) : (
         <ul id="grp-container ">
           <h3 id="main-title">Groups</h3>
@@ -164,8 +169,10 @@ function Home() {
               key={group.id}
               className={`img-msg ${selectedGroupId === group.id ? "selected" : ""
                 }`}
-              onClick={() =>
+              onClick={() => {
                 loadChat(group.chatId, group.id, group.Name, group.Icon, group)
+                setChatWallpaper(false);
+              }
               }
             >
               <img
@@ -182,6 +189,8 @@ function Home() {
           ))}
         </ul>
       )}
+      {chatWallpaper && <div className="home-pic-wrapper"><div className="home-pic"></div></div>}
+
       {grp && (
         <ChatRoom2
           groupData={groupData}
