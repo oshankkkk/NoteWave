@@ -31,7 +31,7 @@ body {
 }
 
 .home-pic {
-  background-image: url(\public\Images\home-new.png);
+  background-image: url("/Images/home-new.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
